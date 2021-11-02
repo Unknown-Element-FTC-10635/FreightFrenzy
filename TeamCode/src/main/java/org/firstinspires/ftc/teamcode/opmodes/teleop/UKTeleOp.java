@@ -38,7 +38,7 @@ public class UKTeleOp extends OpMode {
         leftFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
         leftRear.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) - gamepad1.right_stick_x));
         rightRear.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) + gamepad1.right_stick_x));
-        rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) - gamepad1.right_stick_x));
+        rightFront.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) - gamepad1.right_stick_x));
 
         arm.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
@@ -48,7 +48,7 @@ public class UKTeleOp extends OpMode {
         }
 
         if (gamepad1.circle) {
-            leftGrab.setPosition(0.5);
+            leftGrab.setPosition(-0.5);
             rightGrab.setPosition(0.5);
         }
 
