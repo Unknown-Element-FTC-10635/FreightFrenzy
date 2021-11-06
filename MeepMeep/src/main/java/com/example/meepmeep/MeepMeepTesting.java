@@ -11,7 +11,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 public class MeepMeepTesting {
     public static void main(String[] args) {
         // TODO: If you experience poor performance, enable this flag
-        System.setProperty("sun.java2d.opengl", "true");
+        //System.setProperty("sun.java2d.opengl", "true");
 
         // Declare a MeepMeep instance
         // With a field size of 800 pixels
@@ -55,14 +55,17 @@ public class MeepMeepTesting {
                         driveShim.trajectorySequenceBuilder(new Pose2d(-36.0, 62, Math.toRadians(270)))
                                 .splineTo(new Vector2d(-23.8, 36.8), Math.toRadians(-60))
                                 .waitSeconds(1.5)
+
                                 .setReversed(true)
                                 .lineToLinearHeading(new Pose2d(-36, 62, Math.toRadians(180)))
                                 .setReversed(false)
+
                                 .lineTo(new Vector2d(-61, 64))
                                 .waitSeconds(3)
+
                                 .lineTo(new Vector2d(-36, 62))
-                                .splineTo(new Vector2d(-60.5, 35.6), Math.toRadians(90))
-                                //.back(25)
+                                .splineTo(new Vector2d(-60.5, 35.6), Math.toRadians(0))
+
                                 .build()
                 );
 
@@ -133,10 +136,10 @@ public class MeepMeepTesting {
                 .setBackgroundAlpha(0.95f)
 
                 // Adds the bot
-                .addEntity(blueWarehouse)
+                //.addEntity(blueWarehouse)
                 .addEntity(blueSquare)
-                .addEntity(redWarehouse)
-                .addEntity(redSquare)
+                //.addEntity(redWarehouse)
+                //.addEntity(redSquare)
                 .start();
     }
 }

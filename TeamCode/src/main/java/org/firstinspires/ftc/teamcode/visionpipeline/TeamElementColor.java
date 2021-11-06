@@ -15,7 +15,7 @@ import java.util.Comparator;
 public class TeamElementColor extends OpenCvPipeline {
     static public int barcodePosition;
 
-    final private Scalar LOWERGREEN = new Scalar(25, 50, 0);
+    final private Scalar LOWERGREEN = new Scalar(30, 50, 50);
     final private Scalar UPPERGREEN = new Scalar(55, 255, 255);
 
     final private Rect LEFTBARCODE = new Rect(50, 24, 170, 400);

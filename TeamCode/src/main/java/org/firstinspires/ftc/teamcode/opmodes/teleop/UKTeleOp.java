@@ -28,6 +28,7 @@ public class UKTeleOp extends OpMode {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
+
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
@@ -42,35 +43,30 @@ public class UKTeleOp extends OpMode {
 
         arm.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
+        // OPEN
         if (gamepad1.square) {
-            leftGrab.setPosition(0);
-            rightGrab.setPosition(0);
+            leftGrab.setPosition(0.25);
+            rightGrab.setPosition(0.75);
         }
+        // CLOSE
+        if (gamepad1.circle){
+            leftGrab.setDirection(Servo.Direction.REVERSE);
 
-        if (gamepad1.circle) {
-            leftGrab.setPosition(-0.5);
+            leftGrab.setPosition(0);
             rightGrab.setPosition(0.5);
         }
 
         if (gamepad1.triangle) {
             ducky.setPower(-0.9);
         }
-
-        if (gamepad1.cross) {
-            ducky.setPower(0);
+         if (gamepad1.cross) {
+             ducky.setPower(0);
         }
+
 
         telemetry.addData("Left Servo:", leftGrab.getPosition());
         telemetry.addData("Right Servo:", rightGrab.getPosition());
         telemetry.update();
     }
 
-    @Override
-    public void start() {
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-    }
 }
