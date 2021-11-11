@@ -25,7 +25,7 @@ public class UKTeleOp extends OpMode {
         leftGrab = hardwareMap.get(Servo.class, "leftGrab");
         rightGrab = hardwareMap.get(Servo.class, "rightGrab");
 
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
@@ -36,10 +36,10 @@ public class UKTeleOp extends OpMode {
 
     @Override
     public void loop() {
-        leftFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
-        leftRear.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) - gamepad1.right_stick_x));
-        rightRear.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) + gamepad1.right_stick_x));
-        rightFront.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) - gamepad1.right_stick_x));
+        leftFront.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) + gamepad1.right_stick_x));
+        leftRear.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) - gamepad1.right_stick_x));
+        rightRear.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
+        rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) - gamepad1.right_stick_x));
 
         arm.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
@@ -53,7 +53,7 @@ public class UKTeleOp extends OpMode {
             leftGrab.setDirection(Servo.Direction.REVERSE);
 
             leftGrab.setPosition(0);
-            rightGrab.setPosition(0.5);
+            rightGrab.setPosition(0.4);
         }
 
         if (gamepad1.triangle) {
