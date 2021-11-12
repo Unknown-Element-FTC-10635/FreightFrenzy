@@ -30,7 +30,8 @@ public class MeepMeepTesting {
                 // Creates a trajectory
                 .followTrajectorySequence(driveShim ->
                         driveShim.trajectorySequenceBuilder(new Pose2d(13, 62, Math.toRadians(-90)))
-                                .splineTo(new Vector2d(0, 38), Math.toRadians(-120))
+                                .splineTo(new Vector2d(5, 45), Math.toRadians(-120))
+                                .lineTo(new Vector2d(0, 38))
                                 .waitSeconds(1.5)
                                 .setReversed(true)
                                 .splineTo(new Vector2d(13, 63), Math.toRadians(0))
@@ -53,7 +54,7 @@ public class MeepMeepTesting {
                 // Creates a trajectory
                 .followTrajectorySequence(driveShim ->
                         driveShim.trajectorySequenceBuilder(new Pose2d(-36.0, 62, Math.toRadians(270)))
-                                .splineTo(new Vector2d(-23.8, 36.8), Math.toRadians(-60))
+                                .splineTo(new Vector2d(-60.5, 35.6), -Math.toRadians(90))
                                 .waitSeconds(1.5)
 
                                 .setReversed(true)
@@ -136,10 +137,10 @@ public class MeepMeepTesting {
                 .setBackgroundAlpha(0.95f)
 
                 // Adds the bot
-                //.addEntity(blueWarehouse)
+                .addEntity(blueWarehouse)
                 .addEntity(blueSquare)
                 //.addEntity(redWarehouse)
-                //.addEntity(redSquare)
+                .addEntity(redSquare)
                 .start();
     }
 }
