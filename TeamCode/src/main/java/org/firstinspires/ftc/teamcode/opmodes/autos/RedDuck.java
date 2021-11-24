@@ -50,8 +50,7 @@ public class RedDuck extends LinearOpMode {
 
                 .waitSeconds(3)
 
-                .li
-        neTo(new Vector2d(-36, -62))
+                .lineTo(new Vector2d(-36, -62))
                 .lineToLinearHeading(new Pose2d(-60, -37, Math.toRadians(90)))
                 .forward(1)
                 .back(1)
