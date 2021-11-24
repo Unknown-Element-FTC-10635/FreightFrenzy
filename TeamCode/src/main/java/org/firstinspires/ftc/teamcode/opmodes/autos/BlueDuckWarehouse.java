@@ -54,9 +54,6 @@ public class BlueDuckWarehouse extends LinearOpMode {
                 .strafeLeft(5)
                 .build();
 
-        webcam = new Webcam1(hardwareMap);
-        webcam.startTeamelementColor();
-
         telemetry.addLine("Ready for Start");
         telemetry.update();
 

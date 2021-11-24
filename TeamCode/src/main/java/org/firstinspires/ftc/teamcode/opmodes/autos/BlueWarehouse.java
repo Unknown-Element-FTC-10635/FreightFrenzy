@@ -46,9 +46,6 @@ public class BlueWarehouse extends LinearOpMode {
                 .strafeRight(30)
                 .build();
 
-        webcam = new Webcam1(hardwareMap);
-        webcam.startTeamelementColor();
-
         telemetry.addLine("Ready for Start");
         telemetry.update();
 

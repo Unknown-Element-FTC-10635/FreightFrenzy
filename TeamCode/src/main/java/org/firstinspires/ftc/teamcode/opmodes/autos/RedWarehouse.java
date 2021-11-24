@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @Autonomous
-public class BlueDuck extends LinearOpMode {
+public class RedWarehouse extends LinearOpMode {
     private DcMotor arm;
     private Servo leftGrab, rightGrab;
     private CRServo ducky;
@@ -32,27 +32,17 @@ public class BlueDuck extends LinearOpMode {
 
         bot = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d start = new Pose2d(-36.0, 62, Math.toRadians(270));
+        Pose2d start = new Pose2d(13, -62, Math.toRadians(90));
         bot.setPoseEstimate(start);
 
         TrajectorySequence path = bot.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(-60.5, 36.5), Math.toRadians(270))
-                .setReversed(true)
-                .lineToLinearHeading(new Pose2d(-36, 55, Math.toRadians(180)))
-                .setReversed(false)
-                .addDisplacementMarker(() -> {
-                    ducky.setPower(0.7);
-                })
+                .splineTo(new Vector2d(-3.0, -47.9), Math.toRadians(120))
 
-                .lineToLinearHeading(new Pose2d(-65, 53, Math.toRadians(90)))
-
-                .waitSeconds(3)
-
-                .lineTo(new Vector2d(-36, 62))
-                .lineTo(new Vector2d(-60, 38))
-                .back(1)
-                .forward(1)
-
+                .splineTo(new Vector2d(10, -60), Math.toRadians(185))
+                .lineTo(new Vector2d(16, -64))
+                .waitSeconds(.5)
+                .back(30)
+                .strafeRight(25)
                 .build();
 
         telemetry.addLine("Ready for Start");
