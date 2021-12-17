@@ -15,23 +15,25 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class Webcam1 {
     private final HardwareMap hardwareMap;
 
+    private BasicPipeline basicPipeline;
+    private TeamElementColor teamElementPipeline;
+
     public Webcam1(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
 
     public void startBasic() {
-        BasicPipeline pipeline = new BasicPipeline();
-        start(pipeline);
+        basicPipeline = new BasicPipeline();
+        start(basicPipeline);
     }
 
     public void startTeamelementColor() {
-        TeamElementColor pipeline = new TeamElementColor();
-        start(pipeline);
+        teamElementPipeline = new TeamElementColor();
+        start(teamElementPipeline);
     }
 
-    public void startAprilTracking() {
-        //AprilTagTracking pipeline = new AprilTagTracking(tagsize, fx, fy, cx, cy);
-        //start(pipeline);
+    public int getElementPosition() {
+        return teamElementPipeline.getElementPosition();
     }
 
     private void start(OpenCvPipeline pipeline) {
