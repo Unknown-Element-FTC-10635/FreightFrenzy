@@ -30,13 +30,13 @@ public class MeepMeepTesting {
                 // Creates a trajectory
                 .followTrajectorySequence(driveShim ->
                         driveShim.trajectorySequenceBuilder(new Pose2d(13, 62, Math.toRadians(-90)))
-                                .splineTo(new Vector2d(5, 45), Math.toRadians(-120))
-                                .lineTo(new Vector2d(0, 38))
+                                .splineTo(new Vector2d(0, 38), Math.toRadians(-120))
                                 .waitSeconds(1.5)
                                 .setReversed(true)
                                 .splineTo(new Vector2d(13, 63), Math.toRadians(0))
                                 .setReversed(false)
-                                .back(25)
+                                .back(30)
+                                .strafeLeft(15)
                                 .waitSeconds(1)
                                 .build()
                 );
@@ -54,18 +54,19 @@ public class MeepMeepTesting {
                 // Creates a trajectory
                 .followTrajectorySequence(driveShim ->
                         driveShim.trajectorySequenceBuilder(new Pose2d(-36.0, 62, Math.toRadians(270)))
-                                .splineTo(new Vector2d(-60.5, 35.6), -Math.toRadians(90))
-                                .waitSeconds(1.5)
+                                .splineTo(new Vector2d(-20, 38), Math.toRadians(300))
 
+                                .waitSeconds(1.5)
                                 .setReversed(true)
-                                .lineToLinearHeading(new Pose2d(-36, 62, Math.toRadians(180)))
+
+                                .splineTo(new Vector2d(-36, 55), Math.toRadians(180))
                                 .setReversed(false)
 
-                                .lineTo(new Vector2d(-61, 64))
+                                .lineToLinearHeading(new Pose2d(-65, 53, Math.toRadians(90)))
+
                                 .waitSeconds(3)
 
-                                .lineTo(new Vector2d(-36, 62))
-                                .splineTo(new Vector2d(-60.5, 35.6), Math.toRadians(0))
+                                .lineTo(new Vector2d(-60, 35))
 
                                 .build()
                 );
@@ -76,14 +77,16 @@ public class MeepMeepTesting {
 
                 .setDimensions(12.5, 18)
                 .followTrajectorySequence(driveShim ->
-                                driveShim.trajectorySequenceBuilder(new Pose2d(13, -62, Math.toRadians(90)))
-                                        .splineTo(new Vector2d(3.0, -47.9), Math.toRadians(120))
-
-                                        .splineTo(new Vector2d(13, -65), Math.toRadians(5))
-                                        .waitSeconds(.5)
-                                        .forward(30)
-                                        .strafeLeft(25)
-                                        .build()
+                            driveShim.trajectorySequenceBuilder(new Pose2d(13, -62, Math.toRadians(90)))
+                                    .splineTo(new Vector2d(0, -38), Math.toRadians(120))
+                                    .waitSeconds(1.5)
+                                    .setReversed(true)
+                                    .splineTo(new Vector2d(13, -63), Math.toRadians(0))
+                                    .setReversed(false)
+                                    .back(30)
+                                    .strafeRight(15)
+                                    .waitSeconds(1)
+                                    .build()
                 );
 
         RoadRunnerBotEntity redSquare = new DefaultBotBuilder(meepMeep)
@@ -98,20 +101,20 @@ public class MeepMeepTesting {
                 // Creates a trajectory
                 .followTrajectorySequence(driveShim ->
                                 driveShim.trajectorySequenceBuilder(new Pose2d(-36.0, -62, Math.toRadians(90)))
-                                        .splineTo(new Vector2d(-61, -37), Math.toRadians(90))
+                                        .splineTo(new Vector2d(-20, -38), -Math.toRadians(300))
 
+                                        .waitSeconds(1.5)
                                         .setReversed(true)
-                                        .lineToLinearHeading(new Pose2d(-36, -60, Math.toRadians(180)))
+
+                                        .splineTo(new Vector2d(-36, -55), Math.toRadians(180))
                                         .setReversed(false)
 
-                                        .lineTo(new Vector2d(-60, -60))
+                                        .lineToLinearHeading(new Pose2d(-58, -62, -Math.toRadians(90)))
 
                                         .waitSeconds(3)
 
-                                        .lineTo(new Vector2d(-36, -62))
-                                        .lineToLinearHeading(new Pose2d(-60, -35, Math.toRadians(90)))
-                                        .forward(1)
-                                        .back(1)
+                                        .lineTo(new Vector2d(-60, -35))
+
                                         .build()
                 );
 
