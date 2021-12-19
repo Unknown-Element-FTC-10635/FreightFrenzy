@@ -22,9 +22,11 @@ public class TeamElementColor extends OpenCvPipeline {
     final private Rect RIGHTBARCODE = new Rect(532, 24, 266, 400);
 
     private int elementPosition;
+    private int frame;
 
     @Override
     public Mat processFrame(Mat input) {
+        frame++;
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
 
         Core.inRange(input, LOWERGREEN, UPPERGREEN, input);

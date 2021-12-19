@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.util.LoggingUtil;
 import org.firstinspires.ftc.teamcode.visionpipeline.BasicPipeline;
 import org.firstinspires.ftc.teamcode.visionpipeline.TeamElementColor;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -12,11 +13,15 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.logging.Logger;
+
 public class Webcam1 {
     private final HardwareMap hardwareMap;
 
     private BasicPipeline basicPipeline;
     private TeamElementColor teamElementPipeline;
+
+    private final Logger log = Logger.getLogger(Webcam1.class.getName());
 
     public Webcam1(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -44,20 +49,24 @@ public class Webcam1 {
 
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
 
+        log.info("Opening Camera Device");
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
 
             @Override
             public void onOpened() {
+                log.info("Calling StartStreaming");
                 webcam.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
             public void onError(int errorCode) {
-
+                log.warning("EasyOpenCV error: " + errorCode);
             }
         });
 
+        /*
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(webcam, 30);
+         */
     }
 }
