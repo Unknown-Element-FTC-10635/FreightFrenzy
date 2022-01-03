@@ -27,6 +27,7 @@ public class BlueDuck extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         log.info("Initializing Webcam");
         webcam = new Webcam1(hardwareMap);
         webcam.startTeamelementColor();

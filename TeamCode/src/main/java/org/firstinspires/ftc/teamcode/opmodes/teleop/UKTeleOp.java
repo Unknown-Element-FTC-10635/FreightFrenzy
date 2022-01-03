@@ -87,9 +87,9 @@ public class UKTeleOp extends OpMode {
         }
 
         if (gamepad1.dpad_left) {
-            ducky.setPower(-0.65);
+            ducky.setPower(-0.55);
         } else if (gamepad1.dpad_right) {
-            ducky.setPower(0.65);
+            ducky.setPower(0.55);
         } else if (gamepad1.dpad_down) {
             ducky.setPower(0);
         }
