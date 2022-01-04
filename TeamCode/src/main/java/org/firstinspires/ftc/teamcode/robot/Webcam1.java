@@ -64,9 +64,9 @@ public class Webcam1 {
             }
         });
 
-        /*
+
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(webcam, 30);
-         */
+
     }
 }
