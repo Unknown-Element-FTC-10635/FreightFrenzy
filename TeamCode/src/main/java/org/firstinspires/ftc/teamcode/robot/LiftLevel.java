@@ -42,6 +42,7 @@ public class LiftLevel {
 
         intake = hardwareMap.get(CRServo.class, "intake");
 
+        time = new ElapsedTime();
         time.startTime();
     }
 

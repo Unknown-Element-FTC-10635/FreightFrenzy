@@ -7,24 +7,30 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.robot.LiftLevel;
 import org.firstinspires.ftc.teamcode.robot.LimitSwitch;
 
 @TeleOp
 public class Testing extends LinearOpMode {
-    LimitSwitch testerSwitch;
-    ModernRoboticsI2cRangeSensor rangeSensor;
+    private LiftLevel liftLevel;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        testerSwitch = new LimitSwitch(hardwareMap, telemetry, "limit");
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "leftDistance");
+        liftLevel = new LiftLevel(hardwareMap, telemetry);
 
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("UltraSonic Distance Sensors:", rangeSensor.getDistance(DistanceUnit.CM));
-            telemetry.addData("Switch Status: ", testerSwitch.isPressed());
-            telemetry.update();
+            if (gamepad1.square) {
+                liftLevel.level0();
+            }
+            if (gamepad1.cross) {
+                liftLevel.level1();
+            }
+            if (gamepad1.circle) {
+                liftLevel.level2();
+            }
+
         }
     }
 }
