@@ -12,16 +12,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class LiftLevel {
     private Telemetry telemetry;
 
-    private DcMotorEx liftLeft, liftRight;
+    private DcMotorEx liftLeft, liftRight, extension;
 
-    private CRServo extension, intake;
+    private CRServo intake;
 
-    ElapsedTime time;
+    private ElapsedTime time;
 
     public LiftLevel(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
-
-        time = new ElapsedTime();
 
         liftLeft = hardwareMap.get(DcMotorEx.class, "liftLeft");
         liftRight = hardwareMap.get(DcMotorEx.class, "liftRight");
@@ -34,39 +32,46 @@ public class LiftLevel {
         liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        extension = hardwareMap.get(CRServo.class, "extension");
+        liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        extension = hardwareMap.get(DcMotorEx.class, "extension");
+        extension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        extension.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         intake = hardwareMap.get(CRServo.class, "intake");
+
+        time.startTime();
     }
 
     public void level0() {
         final int LIFT_POSITION0 = -200;
+        final int HORIZONTAL_POSITION = 500;
 
         liftLeft.setPower(0.5);
         liftRight.setPower(0.5);
-
-        extension.setPower(-1);
-
-        time.reset();
-        while (time.milliseconds() < 2250) {
+        while (liftLeft.getCurrentPosition() < LIFT_POSITION0 || liftRight.getCurrentPosition() < LIFT_POSITION0) {
             telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());
             telemetry.addData("Lift Right:", liftRight.getCurrentPosition());
-            telemetry.addData("Time:", time.milliseconds());
             telemetry.update();
+        }
+        liftLeft.setPower(0);
+        liftRight.setPower(0);
 
-            if (liftLeft.getCurrentPosition() < LIFT_POSITION0 || liftRight.getCurrentPosition() < LIFT_POSITION0) {
-                liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }
+        extension.setPower(0.5);
+        while (extension.getCurrentPosition() < HORIZONTAL_POSITION) {
+            telemetry.addData("Horizontal Position", extension.getCurrentPosition());
         }
         extension.setPower(0);
 
         // Push out element
         intake.setPower(-0.2);
         time.reset();
-        while (time.milliseconds() < 1000) {
-        }
+        while (time.milliseconds() < 1000) { }
         intake.setPower(0);
 
+        extension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Retract
         extension.setPower(1);
         time.reset();
@@ -74,14 +79,15 @@ public class LiftLevel {
         }
         extension.setPower(0);
 
+        // Reset
+        liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         // Raise
         liftLeft.setPower(-0.5);
         liftRight.setPower(-0.5);
-        while (liftLeft.getCurrentPosition() < LIFT_POSITION0 * -1 || liftRight.getCurrentPosition() < LIFT_POSITION0 * -1) {
-        }
+        while (liftLeft.getCurrentPosition() < LIFT_POSITION0 * -1 || liftRight.getCurrentPosition() < LIFT_POSITION0 * -1) { }
         liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }

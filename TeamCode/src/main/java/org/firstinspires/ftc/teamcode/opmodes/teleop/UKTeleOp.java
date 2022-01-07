@@ -15,10 +15,10 @@ import org.firstinspires.ftc.teamcode.robot.LimitSwitch;
 
 @TeleOp(name = "TeleOp")
 public class UKTeleOp extends OpMode {
-    DcMotorEx leftFront, leftRear, rightRear, rightFront, ducky, liftLeft, liftRight;
+    DcMotorEx leftFront, leftRear, rightRear, rightFront, ducky, liftLeft, liftRight, extension;
     LimitSwitch leftLiftSwitch, rightLiftSwitch, topSwitch;
-    CRServo extension, intake;
-
+    CRServo intake;
+    Servo magnet;
 
     @Override
     public void init() {
@@ -32,6 +32,8 @@ public class UKTeleOp extends OpMode {
 
         ducky = hardwareMap.get(DcMotorEx.class, "ducky");
 
+        extension = hardwareMap.get(DcMotorEx.class, "extension");
+
         liftLeft = hardwareMap.get(DcMotorEx.class, "liftLeft");
         liftRight = hardwareMap.get(DcMotorEx.class, "liftRight");
 
@@ -44,12 +46,11 @@ public class UKTeleOp extends OpMode {
         rightLiftSwitch = new LimitSwitch(hardwareMap, telemetry, "RightLimit");
         topSwitch = new LimitSwitch(hardwareMap, telemetry, "TopLimit");
 
-        extension = hardwareMap.get(CRServo.class, "extension");
         intake = hardwareMap.get(CRServo.class, "intake");
+        magnet = hardwareMap.get(Servo.class, "magnet");
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
-
     }
 
     @Override
@@ -59,7 +60,7 @@ public class UKTeleOp extends OpMode {
         rightRear.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) + gamepad1.right_stick_x));
         rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
 
-        float liftPower = (gamepad1.right_trigger - gamepad1.left_trigger);
+        float liftPower = (gamepad2.right_trigger - gamepad2.left_trigger);
 
         liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -79,9 +80,9 @@ public class UKTeleOp extends OpMode {
         }
 
         if (gamepad1.left_bumper) {
-            extension.setPower(1);
+            extension.setPower(0.5);
         } else if (gamepad1.right_bumper && topSwitch.isPressed()) {
-            extension.setPower(-1);
+            extension.setPower(-0.5);
         } else {
             extension.setPower(0);
         }
@@ -100,6 +101,13 @@ public class UKTeleOp extends OpMode {
             intake.setPower(-1);
         } else {
             intake.setPower(0);
+        }
+
+        if (gamepad2.right_bumper) {
+            magnet.setPosition(0.5);
+        }
+        if (gamepad2.left_bumper) {
+            magnet.setPosition(0);
         }
 
         telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());

@@ -78,14 +78,14 @@ public class MeepMeepTesting {
                 .setDimensions(12.5, 18)
                 .followTrajectorySequence(driveShim ->
                             driveShim.trajectorySequenceBuilder(new Pose2d(13, -62, Math.toRadians(90)))
-                                    .splineTo(new Vector2d(0, -38), Math.toRadians(120))
-                                    .waitSeconds(1.5)
+                                    .splineTo(new Vector2d(0, -38), Math.toRadians(135))
+                                    .lineToLinearHeading(new Pose2d(10, -65, 0))
+                                    .lineTo(new Vector2d(40, -65))
+                                    .waitSeconds(2)
                                     .setReversed(true)
-                                    .splineTo(new Vector2d(13, -63), Math.toRadians(0))
+                                    .lineTo(new Vector2d(-5, -65))
                                     .setReversed(false)
-                                    .back(30)
-                                    .strafeRight(15)
-                                    .waitSeconds(1)
+                                    .splineTo(new Vector2d(0, -38), Math.toRadians(135))
                                     .build()
                 );
 

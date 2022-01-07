@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.opmodes.autos;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.LiftLevel;
 import org.firstinspires.ftc.teamcode.robot.Webcam1;
@@ -27,7 +29,6 @@ public class BlueDuck extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         log.info("Initializing Webcam");
         webcam = new Webcam1(hardwareMap);
         webcam.startTeamelementColor();
@@ -41,6 +42,17 @@ public class BlueDuck extends LinearOpMode {
 
         Pose2d start = new Pose2d(-36.0, 62, Math.toRadians(270));
         bot.setPoseEstimate(start);
+
+        TrajectorySequence toHub = bot.trajectorySequenceBuilder(start)
+                .splineTo(new Vector2d(-23, 40), Math.toRadians(310))
+                .build();
+
+        TrajectorySequence toDuck = bot.trajectorySequenceBuilder(toHub.end())
+                .setReversed(true)
+                .splineTo(new Vector2d(-40, 55), Math.toRadians(180))
+                .setReversed(false)
+                .lineToLinearHeading(new Pose2d(-64, 59, Math.toRadians(90)))
+                .build();
 
         TrajectorySequence path = bot.trajectorySequenceBuilder(start)
                 .splineTo(new Vector2d(-23, 40), Math.toRadians(310))
