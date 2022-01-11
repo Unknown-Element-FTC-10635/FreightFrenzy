@@ -85,7 +85,7 @@ public class MeepMeepTesting {
                                     .setReversed(true)
                                     .lineTo(new Vector2d(-5, -65))
                                     .setReversed(false)
-                                    .splineTo(new Vector2d(0, -38), Math.toRadians(135))
+                                    .splineTo(new Vector2d(0, -38), Math.toRadians(120))
                                     .build()
                 );
 

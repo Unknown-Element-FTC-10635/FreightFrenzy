@@ -1,36 +1,33 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.robot.LiftLevel;
-import org.firstinspires.ftc.teamcode.robot.LimitSwitch;
+import org.firstinspires.ftc.teamcode.robot.Lift;
 
 @TeleOp
 public class Testing extends LinearOpMode {
-    private LiftLevel liftLevel;
+    private Lift lift;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        liftLevel = new LiftLevel(hardwareMap, telemetry);
+        lift = new Lift(hardwareMap, telemetry);
 
         waitForStart();
 
         while (opModeIsActive()) {
             if (gamepad1.square) {
-                liftLevel.level0();
+                lift.level0(true);
             }
             if (gamepad1.cross) {
-                liftLevel.level1();
+                lift.level1(true);
             }
             if (gamepad1.circle) {
-                liftLevel.level2();
+                lift.level2(true);
             }
-
+            if (gamepad1.triangle) {
+                lift.toGroundPickUp();
+            }
         }
     }
 }

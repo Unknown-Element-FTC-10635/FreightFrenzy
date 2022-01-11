@@ -4,13 +4,10 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.LiftLevel;
+import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
@@ -18,85 +15,97 @@ import java.util.logging.Logger;
 
 @Autonomous
 public class RedDuck extends LinearOpMode {
-    private DcMotorEx ducky;
-    //private Webcam1 webcam;
+    private Webcam1 webcam;
+
+    private Lift lift;
 
     private SampleMecanumDrive bot;
 
-    private LiftLevel liftLevel;
-
     private int elementPosition = 2;
-    private Logger log = Logger.getLogger(RedDuck.class.getName());
 
     @Override
     public void runOpMode() throws InterruptedException {
-        /*
         webcam = new Webcam1(hardwareMap);
         webcam.startTeamelementColor();
-         */
 
-        ducky = hardwareMap.get(DcMotorEx.class, "ducky");
-
-        liftLevel = new LiftLevel(hardwareMap, telemetry);
+        lift = new Lift(hardwareMap, telemetry);
 
         bot = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d start = new Pose2d(-36.0, -62, Math.toRadians(90));
+        Pose2d start = new Pose2d(13, -62, Math.toRadians(90));
         bot.setPoseEstimate(start);
 
-        TrajectorySequence path = bot.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(-23, -40), -Math.toRadians(310))
+        TrajectorySequence initialToHub = bot.trajectorySequenceBuilder(start)
+                .splineTo(new Vector2d(2, -36), Math.toRadians(140))
+                .build();
 
-                .addDisplacementMarker(this::navigateToLevel)
-
+        TrajectorySequence toWarehouse = bot.trajectorySequenceBuilder(initialToHub.end())
                 .setReversed(true)
+                .lineToLinearHeading(new Pose2d(10, -67, 0))
+                .build();
 
-                .splineTo(new Vector2d(-40, -55), 0)
+        TrajectorySequence throughGap = bot.trajectorySequenceBuilder(toWarehouse.end())
+                .lineTo(new Vector2d(45, -67))
+                .waitSeconds(0.5)
+                .build();
+
+        TrajectorySequence returnToHub = bot.trajectorySequenceBuilder(throughGap.end())
+                .setReversed(true)
+                .lineTo(new Vector2d(-11, -67))
                 .setReversed(false)
+                .turn(Math.toRadians(90))
+                .forward(17)
+                .build();
 
-                .addDisplacementMarker(() -> {
-                    ducky.setPower(-0.5);
-                })
-
-                .lineTo(new Vector2d(-64, -65))
-
-                .waitSeconds(3)
-
-                .addDisplacementMarker(() -> {
-                    ducky.setPower(0);
-                })
-
-                .lineTo(new Vector2d(-64, -40))
-
+        TrajectorySequence finalToWarehouse = bot.trajectorySequenceBuilder(returnToHub.end())
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(8, -68, -Math.toRadians(15)))
+                .lineTo(new Vector2d(45, -68))
+                .strafeLeft(25)
                 .build();
 
         telemetry.addLine("Ready for Start");
         telemetry.update();
 
-        log.warning("Finished Initing -- ADDED BY ME");
-
         waitForStart();
 
-      //  elementPosition = webcam.getElementPosition();
+        elementPosition = webcam.getElementPosition();
+        webcam.stop();
 
-        telemetry.addData("POSITION:", elementPosition);
+        telemetry.addData("Going to level:", elementPosition);
         telemetry.update();
 
-        bot.followTrajectorySequence(path);
+        bot.followTrajectorySequence(initialToHub);
+        navigateToLevel();
+
+        bot.followTrajectorySequence(toWarehouse);
+
+        // re-localize?
+
+        lift.toGroundPickUp();
+
+        bot.followTrajectorySequence(throughGap);
+
+        lift.resetPickUp();
+
+        bot.followTrajectorySequence(returnToHub);
+        lift.level2(false);
+
+        bot.followTrajectorySequence(finalToWarehouse);
     }
 
     private void navigateToLevel() {
         switch (elementPosition) {
             case 0:
-                liftLevel.level0();
+                lift.level0(true);
                 break;
 
             case 1:
-                liftLevel.level1();
+                lift.level1(true);
                 break;
 
             case 2:
-                liftLevel.level2();
+                lift.level2(true);
                 break;
         }
     }

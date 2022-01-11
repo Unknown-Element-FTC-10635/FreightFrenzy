@@ -2,14 +2,12 @@ package org.firstinspires.ftc.teamcode.opmodes.autos;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.LiftLevel;
+import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
@@ -22,7 +20,7 @@ public class BlueDuck extends LinearOpMode {
 
     private SampleMecanumDrive bot;
 
-    private LiftLevel liftLevel;
+    private Lift lift;
 
     private int elementPosition = -1;
     private Logger log = Logger.getLogger(BlueDuck.class.getName());
@@ -36,7 +34,7 @@ public class BlueDuck extends LinearOpMode {
 
         ducky = hardwareMap.get(DcMotorEx.class, "ducky");
 
-        liftLevel = new LiftLevel(hardwareMap, telemetry);
+        lift = new Lift(hardwareMap, telemetry);
 
         bot = new SampleMecanumDrive(hardwareMap);
 
@@ -96,15 +94,15 @@ public class BlueDuck extends LinearOpMode {
     private void navigateToLevel() {
         switch (elementPosition) {
             case 0:
-                liftLevel.level0();
+                lift.level0(true);
                 break;
 
             case 1:
-                liftLevel.level1();
+                lift.level1(true);
                 break;
 
             case 2:
-                liftLevel.level2();
+                lift.level2(true);
                 break;
         }
     }

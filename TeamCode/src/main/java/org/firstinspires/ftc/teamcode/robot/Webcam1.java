@@ -23,6 +23,8 @@ public class Webcam1 {
 
     private final Logger log = Logger.getLogger(Webcam1.class.getName());
 
+    private OpenCvWebcam webcam;
+
     public Webcam1(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
@@ -43,7 +45,7 @@ public class Webcam1 {
 
     private void start(OpenCvPipeline pipeline) {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         webcam.setPipeline(pipeline);
 
@@ -67,6 +69,9 @@ public class Webcam1 {
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(webcam, 30);
+    }
 
+    public void stop() {
+        webcam.stopStreaming();
     }
 }
