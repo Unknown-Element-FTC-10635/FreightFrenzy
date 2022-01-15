@@ -4,46 +4,62 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.visionpipeline.TeamElementColor;
 
 @Autonomous
 public class BlueWarehouse extends LinearOpMode {
-    private DcMotor arm;
-    private Servo leftGrab, rightGrab;
     private Webcam1 webcam;
 
-    private int barcode;
+    private Lift lift;
+
     private SampleMecanumDrive bot;
+
+    private int elementPosition = 2;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        arm = hardwareMap.get(DcMotor.class, "arm");
+        webcam = new Webcam1(hardwareMap);
+        webcam.startTeamelementColor();
 
-        leftGrab = hardwareMap.get(Servo.class, "leftGrab");
-        rightGrab = hardwareMap.get(Servo.class, "rightGrab");
-
+        lift = new Lift(hardwareMap, telemetry);
 
         bot = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d start = new Pose2d(13, 62, Math.toRadians(-90));
+        Pose2d start = new Pose2d(13, 62, Math.toRadians(270));
         bot.setPoseEstimate(start);
 
-        TrajectorySequence path = bot.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(3.0, 47.9), Math.toRadians(120))
-                .addDisplacementMarker(() -> {
-                    leftGrab.setPosition(0);
-                    rightGrab.setPosition(0.4);
-                })
-                .splineTo(new Vector2d(13, 65), Math.toRadians(5))
-                .waitSeconds(.5)
-                .forward(30)
-                .strafeRight(30)
+        TrajectorySequence initialToHub = bot.trajectorySequenceBuilder(start)
+                .splineTo(new Vector2d(2, 36), Math.toRadians(220))
+                .build();
+
+        TrajectorySequence toWarehouse = bot.trajectorySequenceBuilder(initialToHub.end())
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(10, 67, 0))
+                .build();
+
+        TrajectorySequence throughGap = bot.trajectorySequenceBuilder(toWarehouse.end())
+                .lineTo(new Vector2d(45, 67))
+                .waitSeconds(1.5)
+                .build();
+
+        TrajectorySequence returnToHub = bot.trajectorySequenceBuilder(throughGap.end())
+                .setReversed(true)
+                .lineTo(new Vector2d(0, 67))
+                .lineTo(new Vector2d(-12, 65))
+                .setReversed(false)
+                .turn(-Math.toRadians(90))
+                .forward(17)
+                .build();
+
+        TrajectorySequence finalToWarehouse = bot.trajectorySequenceBuilder(returnToHub.end())
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(8, 68, Math.toRadians(15)))
+                .lineTo(new Vector2d(45, 68))
+                .strafeRight(25)
                 .build();
 
         telemetry.addLine("Ready for Start");
@@ -51,7 +67,44 @@ public class BlueWarehouse extends LinearOpMode {
 
         waitForStart();
 
-        bot.followTrajectorySequence(path);
+        elementPosition = webcam.getElementPosition();
+        webcam.stop();
+
+        telemetry.addData("Going to level:", elementPosition);
+        telemetry.update();
+
+        bot.followTrajectorySequence(initialToHub);
+        //navigateToLevel();
+
+        bot.followTrajectorySequence(toWarehouse);
+
+        // re-localize?
+
+        //lift.toGroundPickUp();
+
+        bot.followTrajectorySequence(throughGap);
+
+        //lift.resetPickUp();
+
+        bot.followTrajectorySequence(returnToHub);
+        //lift.level2(false);
+
+        bot.followTrajectorySequence(finalToWarehouse);
     }
 
+    private void navigateToLevel() {
+        switch (elementPosition) {
+            case 0:
+                lift.level0(true);
+                break;
+
+            case 1:
+                lift.level1(true);
+                break;
+
+            case 2:
+                lift.level2(true);
+                break;
+        }
+    }
 }
