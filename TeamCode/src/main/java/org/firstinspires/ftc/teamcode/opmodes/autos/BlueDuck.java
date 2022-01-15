@@ -11,26 +11,22 @@ import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-import java.util.logging.Logger;
-
 @Autonomous
 public class BlueDuck extends LinearOpMode {
-    private DcMotorEx ducky;
     private Webcam1 webcam;
-
-    private SampleMecanumDrive bot;
 
     private Lift lift;
 
-    private int elementPosition = -1;
-    private Logger log = Logger.getLogger(BlueDuck.class.getName());
+    private SampleMecanumDrive bot;
+
+    private int elementPosition = 2;
+
+    private DcMotorEx ducky;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        log.info("Initializing Webcam");
         webcam = new Webcam1(hardwareMap);
         webcam.startTeamelementColor();
-        log.info("Finished Initializing Webcam");
 
         ducky = hardwareMap.get(DcMotorEx.class, "ducky");
 
@@ -42,41 +38,20 @@ public class BlueDuck extends LinearOpMode {
         bot.setPoseEstimate(start);
 
         TrajectorySequence toHub = bot.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(-23, 40), Math.toRadians(310))
+                .splineTo(new Vector2d(-21, 39), Math.toRadians(300))
                 .build();
 
         TrajectorySequence toDuck = bot.trajectorySequenceBuilder(toHub.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(-40, 55), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(-50, 50, Math.toRadians(270)))
                 .setReversed(false)
-                .lineToLinearHeading(new Pose2d(-64, 59, Math.toRadians(90)))
+                .lineTo(new Vector2d(-60, 56))
                 .build();
 
-        TrajectorySequence path = bot.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(-23, 40), Math.toRadians(310))
-
-                .addDisplacementMarker(this::navigateToLevel)
-
-                .setReversed(true)
-
-                .splineTo(new Vector2d(-40, 55), Math.toRadians(180))
-                .setReversed(false)
-
-                .addDisplacementMarker(() -> {
-                    ducky.setPower(0.5);
-                })
-
-                .lineToLinearHeading(new Pose2d(-64, 59, Math.toRadians(90)))
-
-                .waitSeconds(3)
-
-                .addDisplacementMarker(() -> {
-                    ducky.setPower(0);
-                })
-
-                .lineTo(new Vector2d(-64, 40))
-
+        TrajectorySequence toSquare = bot.trajectorySequenceBuilder(toDuck.end())
+                .lineTo(new Vector2d(-58, 39))
                 .build();
+
 
         telemetry.addLine("Ready for Start");
         telemetry.update();
@@ -84,11 +59,21 @@ public class BlueDuck extends LinearOpMode {
         waitForStart();
 
         elementPosition = webcam.getElementPosition();
+        webcam.stop();
 
-        telemetry.addData("POSITION:", elementPosition);
+        telemetry.addData("Going to level:", elementPosition);
         telemetry.update();
 
-        bot.followTrajectorySequence(path);
+        bot.followTrajectorySequence(toHub);
+        //navigateToLevel();
+
+        bot.followTrajectorySequence(toDuck);
+        ducky.setPower(0.45);
+
+        sleep(2500);
+
+        ducky.setPower(0);
+        bot.followTrajectorySequence(toSquare);
     }
 
     private void navigateToLevel() {
