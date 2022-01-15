@@ -75,7 +75,7 @@ public class MeepMeepTesting {
                 .setColorScheme(new ColorSchemeRedLight())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 13)
 
-                .setDimensions(12.5, 18)
+                .setDimensions(13, 18)
                 .followTrajectorySequence(driveShim ->
                             driveShim.trajectorySequenceBuilder(new Pose2d(13, -62, Math.toRadians(90)))
                                     .splineTo(new Vector2d(0, -38), Math.toRadians(135))

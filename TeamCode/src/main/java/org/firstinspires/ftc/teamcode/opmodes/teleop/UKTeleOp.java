@@ -34,6 +34,8 @@ public class UKTeleOp extends OpMode {
 
         extension = hardwareMap.get(DcMotorEx.class, "extension");
 
+        extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         liftLeft = hardwareMap.get(DcMotorEx.class, "liftLeft");
         liftRight = hardwareMap.get(DcMotorEx.class, "liftRight");
 
@@ -113,6 +115,7 @@ public class UKTeleOp extends OpMode {
         telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());
         telemetry.addData("Right Lift:", liftRight.getCurrentPosition());
         telemetry.addData("Top Switch:", topSwitch.isPressed());
+        telemetry.addData("Extension::", extension.getCurrentPosition());
         telemetry.update();
     }
 

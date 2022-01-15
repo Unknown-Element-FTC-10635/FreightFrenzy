@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.visionpipeline;
 
 import android.annotation.SuppressLint;
+import android.provider.ContactsContract;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -11,7 +12,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class TeamElementColor extends OpenCvPipeline {
     private final Scalar LOWER_GREEN = new Scalar(30, 50, 50);
-    private final Scalar UPPER_GREEN = new Scalar(55, 255, 255);
+    private final Scalar UPPER_GREEN = new Scalar(100, 255, 255);
 
     private final Rect LEFTBARCODE = new Rect(0, 24, 266, 400);
     private final Rect CENTERBARCODE = new Rect(266, 24, 266, 400);
@@ -24,6 +25,10 @@ public class TeamElementColor extends OpenCvPipeline {
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV);
 
         Core.inRange(input, LOWER_GREEN, UPPER_GREEN, input);
+
+        Imgproc.rectangle(input, LEFTBARCODE, new Scalar(255, 0, 0));
+        Imgproc.rectangle(input, CENTERBARCODE, new Scalar(255, 0, 0));
+        Imgproc.rectangle(input, RIGHTBARCODE, new Scalar(255, 0, 0));
 
         processBarcodes(input);
 

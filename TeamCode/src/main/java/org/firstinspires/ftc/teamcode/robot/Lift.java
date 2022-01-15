@@ -87,7 +87,7 @@ public class Lift {
         liftRight.setPower(0);
 
         // Extend
-        extension.setPower(-0.5);
+        extension.setPower(-0.6);
         while (extension.getCurrentPosition() > -500) {
             telemetry.addData("Horizontal Position", extension.getCurrentPosition());
             telemetry.update();
@@ -97,7 +97,25 @@ public class Lift {
         // To ground
         liftLeft.setPower(-0.5);
         liftRight.setPower(-0.5);
-        while (liftLeft.getCurrentPosition() > -500 || liftRight.getCurrentPosition() > -500) {
+        while (liftLeft.getCurrentPosition() > -200 || liftRight.getCurrentPosition() > -200) {
+            telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());
+            telemetry.addData("Lift Right:", liftRight.getCurrentPosition());
+            telemetry.update();
+        }
+        /*
+        // Attempt to jolt it down
+        liftLeft.setPower(1);
+        liftRight.setPower(1);
+        while (liftLeft.getCurrentPosition() < -100 || liftRight.getCurrentPosition() > -100) {
+            telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());
+            telemetry.addData("Lift Right:", liftRight.getCurrentPosition());
+            telemetry.update();
+        }
+         */
+        liftLeft.setPower(-0.8);
+        liftRight.setPower(-0.8);
+        // Continue going down
+        while (liftLeft.getCurrentPosition() > -400 || liftRight.getCurrentPosition() > -400) {
             telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());
             telemetry.addData("Lift Right:", liftRight.getCurrentPosition());
             telemetry.update();
@@ -140,8 +158,8 @@ public class Lift {
         liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        liftLeft.setPower(0.5);
-        liftRight.setPower(0.5);
+        liftLeft.setPower(0.6);
+        liftRight.setPower(0.6);
         while (liftLeft.getCurrentPosition() < liftPosition || liftRight.getCurrentPosition() < liftPosition) {
             telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());
             telemetry.addData("Lift Right:", liftRight.getCurrentPosition());
@@ -174,15 +192,15 @@ public class Lift {
         extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // Retract
         extension.setPower(0.5);
-        while (extension.getCurrentPosition() < horizontalPosition * -1) {
+        while (extension.getCurrentPosition() < (horizontalPosition + 50) * -1) {
             telemetry.addData("Horizontal Position", extension.getCurrentPosition());
             telemetry.update();
         }
         extension.setPower(0);
 
         // Lower
-        liftLeft.setPower(-0.5);
-        liftRight.setPower(-0.5);
+        liftLeft.setPower(-0.7);
+        liftRight.setPower(-0.7);
         while (liftLeft.getCurrentPosition() > 5 || liftRight.getCurrentPosition() > 5) { }
         liftLeft.setPower(0);
         liftLeft.setPower(0);

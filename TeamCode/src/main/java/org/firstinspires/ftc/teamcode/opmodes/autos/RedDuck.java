@@ -11,8 +11,6 @@ import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-import java.util.logging.Logger;
-
 @Autonomous
 public class RedDuck extends LinearOpMode {
     private Webcam1 webcam;
@@ -23,46 +21,37 @@ public class RedDuck extends LinearOpMode {
 
     private int elementPosition = 2;
 
+    private DcMotorEx ducky;
+
     @Override
     public void runOpMode() throws InterruptedException {
         webcam = new Webcam1(hardwareMap);
         webcam.startTeamelementColor();
 
+        ducky = hardwareMap.get(DcMotorEx.class, "ducky");
+
         lift = new Lift(hardwareMap, telemetry);
 
         bot = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d start = new Pose2d(13, -62, Math.toRadians(90));
+        Pose2d start = new Pose2d(-36.0, -62, Math.toRadians(90));
         bot.setPoseEstimate(start);
 
-        TrajectorySequence initialToHub = bot.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(2, -36), Math.toRadians(140))
-                .build();
+        TrajectorySequence toHub = bot.trajectorySequenceBuilder(start)
+            .splineTo(new Vector2d(-21, -39), -Math.toRadians(300))
+            .build();
 
-        TrajectorySequence toWarehouse = bot.trajectorySequenceBuilder(initialToHub.end())
-                .setReversed(true)
-                .lineToLinearHeading(new Pose2d(10, -67, 0))
-                .build();
+        TrajectorySequence toDuck = bot.trajectorySequenceBuilder(toHub.end())
+            .setReversed(true)
+            .splineToLinearHeading(new Pose2d(-50, -50, 0), 0)
+            .setReversed(false)
+            .lineToLinearHeading(new Pose2d(-60, -55, 0))
+            .build();
 
-        TrajectorySequence throughGap = bot.trajectorySequenceBuilder(toWarehouse.end())
-                .lineTo(new Vector2d(45, -67))
-                .waitSeconds(0.5)
-                .build();
+        TrajectorySequence toSquare = bot.trajectorySequenceBuilder(toDuck.end())
+            .lineToLinearHeading(new Pose2d(-58, -35, 0))
+            .build();
 
-        TrajectorySequence returnToHub = bot.trajectorySequenceBuilder(throughGap.end())
-                .setReversed(true)
-                .lineTo(new Vector2d(-11, -67))
-                .setReversed(false)
-                .turn(Math.toRadians(90))
-                .forward(17)
-                .build();
-
-        TrajectorySequence finalToWarehouse = bot.trajectorySequenceBuilder(returnToHub.end())
-                .setReversed(true)
-                .lineToLinearHeading(new Pose2d(8, -68, -Math.toRadians(15)))
-                .lineTo(new Vector2d(45, -68))
-                .strafeLeft(25)
-                .build();
 
         telemetry.addLine("Ready for Start");
         telemetry.update();
@@ -75,23 +64,16 @@ public class RedDuck extends LinearOpMode {
         telemetry.addData("Going to level:", elementPosition);
         telemetry.update();
 
-        bot.followTrajectorySequence(initialToHub);
+        bot.followTrajectorySequence(toHub);
         navigateToLevel();
 
-        bot.followTrajectorySequence(toWarehouse);
+        bot.followTrajectorySequence(toDuck);
+        ducky.setPower(-0.45);
 
-        // re-localize?
+        sleep(2500);
 
-        lift.toGroundPickUp();
-
-        bot.followTrajectorySequence(throughGap);
-
-        lift.resetPickUp();
-
-        bot.followTrajectorySequence(returnToHub);
-        lift.level2(false);
-
-        bot.followTrajectorySequence(finalToWarehouse);
+        ducky.setPower(0);
+        bot.followTrajectorySequence(toSquare);
     }
 
     private void navigateToLevel() {

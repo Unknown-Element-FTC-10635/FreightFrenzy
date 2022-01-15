@@ -43,12 +43,13 @@ public class RedWarehouse extends LinearOpMode {
 
         TrajectorySequence throughGap = bot.trajectorySequenceBuilder(toWarehouse.end())
                 .lineTo(new Vector2d(45, -67))
-                .waitSeconds(0.5)
+                .waitSeconds(1.5)
                 .build();
 
         TrajectorySequence returnToHub = bot.trajectorySequenceBuilder(throughGap.end())
                 .setReversed(true)
-                .lineTo(new Vector2d(-11, -67))
+                .lineTo(new Vector2d(0, -67))
+                .lineTo(new Vector2d(-12, -65))
                 .setReversed(false)
                 .turn(Math.toRadians(90))
                 .forward(17)
