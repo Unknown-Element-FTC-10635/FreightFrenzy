@@ -74,20 +74,20 @@ public class BlueWarehouse extends LinearOpMode {
         telemetry.update();
 
         bot.followTrajectorySequence(initialToHub);
-        //navigateToLevel();
+        navigateToLevel();
 
         bot.followTrajectorySequence(toWarehouse);
 
         // re-localize?
 
-        //lift.toGroundPickUp();
+        lift.toGroundPickUp();
 
         bot.followTrajectorySequence(throughGap);
 
-        //lift.resetPickUp();
+        lift.resetPickUp();
 
         bot.followTrajectorySequence(returnToHub);
-        //lift.level2(false);
+        lift.level2(false);
 
         bot.followTrajectorySequence(finalToWarehouse);
     }

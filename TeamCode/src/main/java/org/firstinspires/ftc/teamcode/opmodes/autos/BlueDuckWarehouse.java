@@ -65,7 +65,7 @@ public class BlueDuckWarehouse extends LinearOpMode {
         telemetry.update();
 
         bot.followTrajectorySequence(toHub);
-        //navigateToLevel();
+        navigateToLevel();
 
         bot.followTrajectorySequence(toDuck);
         ducky.setPower(0.45);
