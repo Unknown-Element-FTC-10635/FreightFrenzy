@@ -10,7 +10,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class TeamElementColor extends OpenCvPipeline {
+public class TeamElementColorPipeline extends OpenCvPipeline {
     private final Scalar LOWER_GREEN = new Scalar(50, 50, 50);
     private final Scalar UPPER_GREEN = new Scalar(100, 255, 255);
 

@@ -4,9 +4,9 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.util.LoggingUtil;
 import org.firstinspires.ftc.teamcode.visionpipeline.BasicPipeline;
-import org.firstinspires.ftc.teamcode.visionpipeline.TeamElementColor;
+import org.firstinspires.ftc.teamcode.visionpipeline.DuckDetectionPipeline;
+import org.firstinspires.ftc.teamcode.visionpipeline.TeamElementColorPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -19,7 +19,8 @@ public class Webcam1 {
     private final HardwareMap hardwareMap;
 
     private BasicPipeline basicPipeline;
-    private TeamElementColor teamElementPipeline;
+    private TeamElementColorPipeline teamElementPipeline;
+    private DuckDetectionPipeline duckDetectionPipeline;
 
     private final Logger log = Logger.getLogger(Webcam1.class.getName());
 
@@ -35,12 +36,17 @@ public class Webcam1 {
     }
 
     public void startTeamelementColor() {
-        teamElementPipeline = new TeamElementColor();
+        teamElementPipeline = new TeamElementColorPipeline();
         start(teamElementPipeline);
     }
 
     public int getElementPosition() {
         return teamElementPipeline.getElementPosition();
+    }
+
+    public void startDuckDectionPipeline() {
+        duckDetectionPipeline = new DuckDetectionPipeline();
+        start(duckDetectionPipeline);
     }
 
     private void start(OpenCvPipeline pipeline) {

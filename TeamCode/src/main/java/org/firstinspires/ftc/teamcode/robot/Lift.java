@@ -176,9 +176,9 @@ public class Lift {
         extension.setPower(0);
 
         // Push out element
-        intake.setPower(-0.2);
+        intake.setPower(-0.4);
         time.reset();
-        while (time.milliseconds() < 1000) { }
+        while (time.milliseconds() < 1500) { }
         intake.setPower(0);
 
         if (returnHome) {

@@ -2,31 +2,27 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.robot.Lift;
+import org.firstinspires.ftc.teamcode.robot.Webcam1;
 
 @TeleOp
 public class Testing extends LinearOpMode {
-    private Lift lift;
+    private DcMotorEx ducky;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        lift = new Lift(hardwareMap, telemetry);
+        ducky = hardwareMap.get(DcMotorEx.class, "ducky");
+
+        Webcam1 webcam = new Webcam1(hardwareMap);
+        webcam.startDuckDectionPipeline();
 
         waitForStart();
 
         while (opModeIsActive()) {
-            if (gamepad1.square) {
-                lift.level0(true);
-            }
             if (gamepad1.cross) {
-                lift.level1(true);
-            }
-            if (gamepad1.circle) {
-                lift.level2(true);
-            }
-            if (gamepad1.triangle) {
-                lift.toGroundPickUp();
+                ducky.setPower(0.2);
             }
         }
     }
