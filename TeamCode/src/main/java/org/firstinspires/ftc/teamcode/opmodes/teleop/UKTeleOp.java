@@ -18,8 +18,7 @@ import org.firstinspires.ftc.teamcode.robot.LimitSwitch;
 public class UKTeleOp extends OpMode {
     DcMotorEx leftFront, leftRear, rightRear, rightFront, ducky, liftLeft, liftRight, extension;
     LimitSwitch leftLiftSwitch, rightLiftSwitch, topSwitch;
-    CRServo intake, tapeOut, tapePitch;
-    Servo tapeYaw;
+    CRServo intake, tapeOut, tapePitch, tapeYaw;
 
     ElapsedTime time;
 
@@ -54,7 +53,7 @@ public class UKTeleOp extends OpMode {
         intake = hardwareMap.get(CRServo.class, "intake");
         tapePitch = hardwareMap.get(CRServo.class, "tapePitch");
         tapeOut = hardwareMap.get(CRServo.class, "tapeOut");
-        tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
+        tapeYaw = hardwareMap.get(CRServo.class, "tapeYaw");
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
@@ -72,7 +71,7 @@ public class UKTeleOp extends OpMode {
         rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
 
         tapePitch.setPower(gamepad2.right_stick_y * 0.1);
-        tapeYaw.setPosition(tapeYaw.getPosition() + (Math.signum(gamepad2.left_stick_x) * 0.002));
+        tapeYaw.setPower(gamepad2.left_stick_x * 0.1);
 
         liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -111,7 +110,7 @@ public class UKTeleOp extends OpMode {
             intake.setPower(1);
         } else if (gamepad1.circle) {
             intake.setPower(-1);
-        } else {
+        } if (gamepad1.cross) {
             intake.setPower(0);
         }
 
@@ -127,9 +126,7 @@ public class UKTeleOp extends OpMode {
         telemetry.addData("Right Lift:", liftRight.getCurrentPosition());
         telemetry.addData("Top Switch:", topSwitch.isPressed());
         telemetry.addData("Extension:", extension.getCurrentPosition());
-        telemetry.addData("Tape Yaw:", tapeYaw.getPosition());
         telemetry.addData("Cycle Time:", time.milliseconds());
         telemetry.update();
     }
-
 }
