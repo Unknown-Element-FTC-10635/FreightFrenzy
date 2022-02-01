@@ -5,10 +5,10 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class HorizontalLiftSubsystem extends SubsystemBase {
+public class VerticalLiftSubsystem extends SubsystemBase {
     private final MotorGroup liftMotors;
 
-    public HorizontalLiftSubsystem(HardwareMap hardwareMap) {
+    public VerticalLiftSubsystem(HardwareMap hardwareMap) {
         Motor leftLift = hardwareMap.get(Motor.class, "liftLeft");
         Motor rightLift = hardwareMap.get(Motor.class, "liftRight");
         rightLift.setInverted(true);

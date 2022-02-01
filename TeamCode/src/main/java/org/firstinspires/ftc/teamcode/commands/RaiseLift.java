@@ -2,14 +2,14 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
 public class RaiseLift extends CommandBase {
-    private final HorizontalLiftSubsystem liftSubsystem;
+    private final VerticalLiftSubsystem liftSubsystem;
     private final int position;
 
 
-    public RaiseLift(HorizontalLiftSubsystem subsystem, int position) {
+    public RaiseLift(VerticalLiftSubsystem subsystem, int position) {
         liftSubsystem = subsystem;
         addRequirements(liftSubsystem);
 

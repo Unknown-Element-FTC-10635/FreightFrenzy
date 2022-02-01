@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 
@@ -20,7 +20,7 @@ public class UKTeleOp extends OpMode {
     CRServo tapeOut, tapePitch;
     Servo tapeYaw;
 
-    HorizontalLiftSubsystem liftSubsystem;
+    VerticalLiftSubsystem liftSubsystem;
     IntakeSubsystem intake;
     DuckWheelSubsystem ducky;
     LimitSwitchSubsystem leftLiftSwitch, rightLiftSwitch, topSwitch;
@@ -42,7 +42,7 @@ public class UKTeleOp extends OpMode {
 
         extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        liftSubsystem = new HorizontalLiftSubsystem(hardwareMap);
+        liftSubsystem = new VerticalLiftSubsystem(hardwareMap);
         ducky = new DuckWheelSubsystem(hardwareMap);
         leftLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "LeftLimit");
         rightLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "RightLimit");
