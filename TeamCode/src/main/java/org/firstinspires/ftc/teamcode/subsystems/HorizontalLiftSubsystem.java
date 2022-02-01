@@ -20,6 +20,10 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
         liftMotors.setTargetPosition(position);
     }
 
+    public void lift(float power) {
+        liftMotors.set(power);
+    }
+
     public void stop() {
         liftMotors.stopMotor();
     }

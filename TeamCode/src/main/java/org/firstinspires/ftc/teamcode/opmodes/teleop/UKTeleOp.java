@@ -10,15 +10,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 
 @TeleOp(name = "TeleOp")
 public class UKTeleOp extends OpMode {
-    DcMotorEx leftFront, leftRear, rightRear, rightFront, liftLeft, liftRight, extension;
+    DcMotorEx leftFront, leftRear, rightRear, rightFront, extension;
     CRServo tapeOut, tapePitch;
     Servo tapeYaw;
 
+    HorizontalLiftSubsystem liftSubsystem;
     IntakeSubsystem intake;
     DuckWheelSubsystem ducky;
     LimitSwitchSubsystem leftLiftSwitch, rightLiftSwitch, topSwitch;
@@ -40,14 +42,7 @@ public class UKTeleOp extends OpMode {
 
         extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        liftLeft = hardwareMap.get(DcMotorEx.class, "liftLeft");
-        liftRight = hardwareMap.get(DcMotorEx.class, "liftRight");
-
-        liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        liftSubsystem = new HorizontalLiftSubsystem(hardwareMap);
         ducky = new DuckWheelSubsystem(hardwareMap);
         leftLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "LeftLimit");
         rightLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "RightLimit");
@@ -74,26 +69,13 @@ public class UKTeleOp extends OpMode {
         rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
 
         tapePitch.setPower(gamepad2.right_stick_y * 0.1);
-        if (gamepad2.left_stick_x != 0) {
-            tapeYaw.setPosition(tapeYaw.getPosition() + (0.005 * Math.signum(gamepad2.left_stick_x)));
-        }
+        tapeYaw.setPosition(tapeYaw.getPosition() + (0.005 * Math.signum(gamepad2.left_stick_x)));
 
-        liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        float liftPower = (gamepad2.right_trigger - gamepad2.left_trigger);
-        if (leftLiftSwitch.isPressed() && liftPower > 0) {
-            liftLeft.setPower(liftPower);
-            liftRight.setPower(liftPower);
-        } else if (!(leftLiftSwitch.isPressed())) {
-            liftLeft.setPower(liftPower);
-            liftRight.setPower(liftPower);
-        } else {
-            liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-            liftLeft.setPower(0);
-            liftRight.setPower(0);
+        float liftPower = gamepad2.right_trigger - gamepad2.left_trigger;
+        if (leftLiftSwitch.isPressed() || leftLiftSwitch.isPressed()) {
+            liftPower = Math.abs(liftPower);
         }
+        liftSubsystem.lift(liftPower);
 
         if (gamepad1.left_bumper) {
             extension.setPower(0.5);
@@ -131,8 +113,7 @@ public class UKTeleOp extends OpMode {
             tapeOut.setPower(0);
         }
 
-        telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());
-        telemetry.addData("Right Lift:", liftRight.getCurrentPosition());
+        telemetry.addData("Lift:", liftSubsystem.getEncoder());
         telemetry.addData("Top Switch:", topSwitch.isPressed());
         telemetry.addData("Extension:", extension.getCurrentPosition());
         telemetry.addData("Cycle Time:", time.milliseconds());
