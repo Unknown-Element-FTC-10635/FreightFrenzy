@@ -2,25 +2,27 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 
-public class RaiseLift extends CommandBase {
-    private final VerticalLiftSubsystem liftSubsystem;
+public class ExtendLift extends CommandBase {
+    private final HorizontalLiftSubsystem liftSubsystem;
     private final int position;
-    private final double speed;
 
-    public RaiseLift(VerticalLiftSubsystem subsystem, int position, double speed) {
+    public ExtendLift(HorizontalLiftSubsystem subsystem, int position) {
         liftSubsystem = subsystem;
         addRequirements(liftSubsystem);
 
         this.position = position;
-        this.speed = speed;
     }
 
     @Override
     public void initialize() {
-        liftSubsystem.liftToPosition(position);
-        liftSubsystem.setPower(speed);
+        liftSubsystem.extendToPosition(position);
+        if (position > 0) {
+            liftSubsystem.out();
+        } else {
+            liftSubsystem.in();
+        }
     }
 
     @Override

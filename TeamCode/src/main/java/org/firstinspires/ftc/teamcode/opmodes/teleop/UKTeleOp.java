@@ -3,23 +3,24 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
 @TeleOp(name = "TeleOp")
 public class UKTeleOp extends OpMode {
-    DcMotorEx leftFront, leftRear, rightRear, rightFront, extension;
+    DcMotorEx leftFront, leftRear, rightRear, rightFront;
     CRServo tapeOut, tapePitch;
     Servo tapeYaw;
 
+    HorizontalLiftSubsystem extension;
     VerticalLiftSubsystem liftSubsystem;
     IntakeSubsystem intake;
     DuckWheelSubsystem ducky;
@@ -37,11 +38,7 @@ public class UKTeleOp extends OpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
-        extension = hardwareMap.get(DcMotorEx.class, "extension");
-
-        extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        extension = new HorizontalLiftSubsystem(hardwareMap);
         liftSubsystem = new VerticalLiftSubsystem(hardwareMap);
         ducky = new DuckWheelSubsystem(hardwareMap);
         leftLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "LeftLimit");
@@ -75,14 +72,14 @@ public class UKTeleOp extends OpMode {
         if (leftLiftSwitch.isPressed() || leftLiftSwitch.isPressed()) {
             liftPower = Math.abs(liftPower);
         }
-        liftSubsystem.lift(liftPower);
+        liftSubsystem.setPower(liftPower);
 
         if (gamepad1.left_bumper) {
-            extension.setPower(0.5);
+            extension.in();
         } else if (gamepad1.right_bumper && topSwitch.isPressed()) {
-            extension.setPower(-0.5);
+            extension.out();
         } else {
-            extension.setPower(0);
+            extension.stop();
         }
 
         // Handles the duck carousel
@@ -113,9 +110,9 @@ public class UKTeleOp extends OpMode {
             tapeOut.setPower(0);
         }
 
-        telemetry.addData("Lift:", liftSubsystem.getEncoder());
+        telemetry.addData("Lift:", liftSubsystem.getPosition());
         telemetry.addData("Top Switch:", topSwitch.isPressed());
-        telemetry.addData("Extension:", extension.getCurrentPosition());
+        telemetry.addData("Extension:", extension.getPosition());
         telemetry.addData("Cycle Time:", time.milliseconds());
         telemetry.update();
     }

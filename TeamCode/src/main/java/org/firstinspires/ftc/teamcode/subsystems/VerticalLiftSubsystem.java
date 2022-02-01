@@ -16,11 +16,11 @@ public class VerticalLiftSubsystem extends SubsystemBase {
         liftMotors = new MotorGroup(leftLift, rightLift);
     }
 
-    public void lift(int position) {
+    public void liftToPosition(int position) {
         liftMotors.setTargetPosition(position);
     }
 
-    public void lift(float power) {
+    public void setPower(double power) {
         liftMotors.set(power);
     }
 
@@ -28,7 +28,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
         liftMotors.stopMotor();
     }
 
-    public int getEncoder() {
+    public int getPosition() {
         return liftMotors.getCurrentPosition();
     }
 
