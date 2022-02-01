@@ -9,14 +9,19 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.robot.LimitSwitch;
+import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 
 @TeleOp(name = "TeleOp")
 public class UKTeleOp extends OpMode {
-    DcMotorEx leftFront, leftRear, rightRear, rightFront, ducky, liftLeft, liftRight, extension;
-    LimitSwitch leftLiftSwitch, rightLiftSwitch, topSwitch;
-    CRServo intake, tapeOut, tapePitch;
+    DcMotorEx leftFront, leftRear, rightRear, rightFront, liftLeft, liftRight, extension;
+    CRServo tapeOut, tapePitch;
     Servo tapeYaw;
+
+    IntakeSubsystem intake;
+    DuckWheelSubsystem ducky;
+    LimitSwitchSubsystem leftLiftSwitch, rightLiftSwitch, topSwitch;
 
     ElapsedTime time;
 
@@ -30,7 +35,6 @@ public class UKTeleOp extends OpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        ducky = hardwareMap.get(DcMotorEx.class, "ducky");
 
         extension = hardwareMap.get(DcMotorEx.class, "extension");
 
@@ -44,11 +48,12 @@ public class UKTeleOp extends OpMode {
         liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftLiftSwitch = new LimitSwitch(hardwareMap, telemetry, "LeftLimit");
-        rightLiftSwitch = new LimitSwitch(hardwareMap, telemetry, "RightLimit");
-        topSwitch = new LimitSwitch(hardwareMap, telemetry, "TopLimit");
+        ducky = new DuckWheelSubsystem(hardwareMap);
+        leftLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "LeftLimit");
+        rightLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "RightLimit");
+        topSwitch = new LimitSwitchSubsystem(hardwareMap, "TopLimit");
+        intake = new IntakeSubsystem(hardwareMap);
 
-        intake = hardwareMap.get(CRServo.class, "intake");
         tapePitch = hardwareMap.get(CRServo.class, "tapePitch");
         tapeOut = hardwareMap.get(CRServo.class, "tapeOut");
         tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
@@ -98,23 +103,26 @@ public class UKTeleOp extends OpMode {
             extension.setPower(0);
         }
 
+        // Handles the duck carousel
         if (gamepad1.dpad_left) {
-            ducky.setPower(-0.55);
+            ducky.left();
         } else if (gamepad1.dpad_right) {
-            ducky.setPower(0.55);
+            ducky.right();
         } else if (gamepad1.dpad_down) {
-            ducky.setPower(0);
+            ducky.stop();
         }
 
+        // Handles the intake
         if (gamepad1.square) {
-            intake.setPower(1);
+            intake.in();
         } else if (gamepad1.circle) {
-            intake.setPower(-1);
+            intake.out();
         }
         if (gamepad1.cross) {
-            intake.setPower(0);
+            intake.stop();
         }
 
+        // Handles the tape measure extension and retraction
         if (gamepad2.x) {
             tapeOut.setPower(-1);
         } else if (gamepad2.b) {
