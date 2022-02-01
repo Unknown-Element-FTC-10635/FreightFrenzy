@@ -69,9 +69,7 @@ public class UKTeleOp extends OpMode {
         rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
 
         tapePitch.setPower(gamepad2.right_stick_y * 0.1);
-        if (gamepad2.left_stick_x != 0) {
-            tapeYaw.setPosition(tapeYaw.getPosition() + (0.005 * -Math.signum(gamepad2.left_stick_x)));
-        }
+        tapeYaw.setPosition(tapeYaw.getPosition() + (0.0025 * -Math.signum(gamepad2.left_stick_x)));
 
         liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
