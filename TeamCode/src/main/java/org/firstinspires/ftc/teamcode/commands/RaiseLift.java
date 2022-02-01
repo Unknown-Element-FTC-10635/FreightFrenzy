@@ -3,13 +3,14 @@ package org.firstinspires.ftc.teamcode.commands;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem.VerticalLevel;
 
 public class RaiseLift extends CommandBase {
     private final VerticalLiftSubsystem liftSubsystem;
-    private final int position;
+    private final VerticalLevel position;
     private final double speed;
 
-    public RaiseLift(VerticalLiftSubsystem subsystem, int position, double speed) {
+    public RaiseLift(VerticalLiftSubsystem subsystem, VerticalLevel position, double speed) {
         liftSubsystem = subsystem;
         addRequirements(liftSubsystem);
 
@@ -26,6 +27,7 @@ public class RaiseLift extends CommandBase {
     @Override
     public void execute() {
         if (liftSubsystem.atTargetPosition()) {
+            liftSubsystem.stop();
             isFinished();
         }
     }

@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.commands;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem.HorizontalLevel;
+
 
 public class ExtendLift extends CommandBase {
     private final HorizontalLiftSubsystem liftSubsystem;
-    private final int position;
+    private final HorizontalLevel position;
 
-    public ExtendLift(HorizontalLiftSubsystem subsystem, int position) {
+    public ExtendLift(HorizontalLiftSubsystem subsystem, HorizontalLevel position) {
         liftSubsystem = subsystem;
         addRequirements(liftSubsystem);
 
@@ -18,7 +20,7 @@ public class ExtendLift extends CommandBase {
     @Override
     public void initialize() {
         liftSubsystem.extendToPosition(position);
-        if (position > 0) {
+        if (position.encoderLevel < liftSubsystem.getPosition()) {
             liftSubsystem.out();
         } else {
             liftSubsystem.in();
@@ -28,6 +30,7 @@ public class ExtendLift extends CommandBase {
     @Override
     public void execute() {
         if (liftSubsystem.atTargetPosition()) {
+            liftSubsystem.stop();
             isFinished();
         }
     }

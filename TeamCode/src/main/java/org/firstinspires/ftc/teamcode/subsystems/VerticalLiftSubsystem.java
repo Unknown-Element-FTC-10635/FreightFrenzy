@@ -51,7 +51,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
 
     /**
      * Sets the power of both motors
-     * @param power : speed of the motor
+     * @param power speed of the motor
      */
     public void setPower(double power) {
         liftMotors.set(power);
@@ -59,7 +59,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
 
     /**
      * Travels to one of the pre-saved positions
-     * @param level
+     * @param level the level the lift should go to
      */
     public void liftToPosition(VerticalLevel level) {
         liftMotors.setTargetPosition(level.encoderLevel);
@@ -74,14 +74,22 @@ public class VerticalLiftSubsystem extends SubsystemBase {
     }
 
     /**
-     * @return : the motors' current encoder value
+     * Resets the encoder values
+     */
+    public void reset() {
+        liftLevel = VerticalLevel.Home;
+        liftMotors.resetEncoder();
+    }
+
+    /**
+     * @return the motors' current encoder value
      */
     public int getPosition() {
         return liftMotors.getCurrentPosition();
     }
 
     /**
-     * @return : whether the motors have reached their position
+     * @return whether the motors have reached their position
      */
     public boolean atTargetPosition() {
         return liftMotors.atTargetPosition();
