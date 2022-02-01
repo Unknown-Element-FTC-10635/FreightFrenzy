@@ -20,6 +20,8 @@ public class UKTeleOp extends OpMode {
 
     ElapsedTime time;
 
+    int tapeOutValue = 0;
+
     @Override
     public void init() {
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -69,7 +71,8 @@ public class UKTeleOp extends OpMode {
         rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
 
         tapePitch.setPower(gamepad2.right_stick_y * 0.1);
-        tapeYaw.setPosition(tapeYaw.getPosition() + (0.0025 * -Math.signum(gamepad2.left_stick_x)));
+
+        tapeYaw.setPosition(tapeYaw.getPosition() + (0.0025 - (tapeOutValue * 0.00001) * -Math.signum(gamepad2.left_stick_x)));
 
         liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -114,8 +117,10 @@ public class UKTeleOp extends OpMode {
         }
 
         if (gamepad2.x) {
+            tapeOutValue--;
             tapeOut.setPower(-1);
         } else if (gamepad2.b) {
+            tapeOutValue++;
             tapeOut.setPower(1);
         } else {
             tapeOut.setPower(0);
@@ -125,6 +130,7 @@ public class UKTeleOp extends OpMode {
         telemetry.addData("Right Lift:", liftRight.getCurrentPosition());
         telemetry.addData("Top Switch:", topSwitch.isPressed());
         telemetry.addData("Extension:", extension.getCurrentPosition());
+        telemetry.addData("Tape Measure Extension Position", tapeOutValue);
         telemetry.addData("Cycle Time:", time.milliseconds());
         telemetry.update();
     }
