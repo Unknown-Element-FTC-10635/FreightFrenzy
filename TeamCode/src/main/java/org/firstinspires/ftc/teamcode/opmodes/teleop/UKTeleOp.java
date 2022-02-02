@@ -38,8 +38,8 @@ public class UKTeleOp extends OpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        extension = new HorizontalLiftSubsystem(hardwareMap);
-        liftSubsystem = new VerticalLiftSubsystem(hardwareMap);
+        extension = new HorizontalLiftSubsystem(hardwareMap, telemetry);
+        liftSubsystem = new VerticalLiftSubsystem(hardwareMap, telemetry);
         ducky = new DuckWheelSubsystem(hardwareMap);
         leftLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "LeftLimit");
         rightLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "RightLimit");
