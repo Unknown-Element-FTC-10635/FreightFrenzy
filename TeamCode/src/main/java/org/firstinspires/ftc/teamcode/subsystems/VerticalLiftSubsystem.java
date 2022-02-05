@@ -36,6 +36,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
         rightLift.setInverted(true);
 
         liftMotors = new MotorGroup(leftLift, rightLift);
+        liftMotors.setRunMode(Motor.RunMode.PositionControl);
 
         this.telemetry = telemetry;
     }

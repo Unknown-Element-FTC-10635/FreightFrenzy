@@ -3,11 +3,16 @@ package org.firstinspires.ftc.teamcode.opmodes.autos;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.commandgroup.DeliverToBottomLevel;
+import org.firstinspires.ftc.teamcode.commandgroup.DeliverToMiddleLevel;
+import org.firstinspires.ftc.teamcode.commandgroup.DeliverToTopLevel;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
@@ -59,10 +64,10 @@ public class BlueDuck extends CommandOpMode {
                 .lineTo(new Vector2d(-50, 25))
                 .turn(Math.toRadians(90))
 
-                // RAISE LIFT SOMEHOW
+                .build();
 
+        TrajectorySequence approachHub = drive.trajectorySequenceBuilder(toHub.end())
                 .lineTo(new Vector2d(-33, 25))
-
                 .build();
 
         TrajectorySequence toSquare = drive.trajectorySequenceBuilder(toHub.end())
@@ -92,8 +97,29 @@ public class BlueDuck extends CommandOpMode {
                     new SpinCarousel(duck, true)
                 ),
                 new FollowTrajectoryCommand(drive, toHub),
+                new ParallelCommandGroup(
+                        new FollowTrajectoryCommand(drive, approachHub),
+                        new InstantCommand(() -> {
+                            switch (elementPosition) {
+                                case 0:
+                                    new DeliverToBottomLevel(verticalLift, horizontalLift, intake);
+                                    break;
+                                case 1:
+                                    new DeliverToMiddleLevel(verticalLift, horizontalLift, intake);
+                                    break;
+                                case 2:
+                                    new DeliverToTopLevel(verticalLift, horizontalLift, intake);
+                                    break;
+                            }
+                        }
+                        )
+                ),
                 new FollowTrajectoryCommand(drive, toSquare)
             )
         );
+
+        register();
     }
+
+
 }
