@@ -12,15 +12,8 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem.VerticalLevel;
 
-public class DeliverToMiddleLevel extends SequentialCommandGroup {
+public class DeliverToMiddleLevel extends DeliverToLevel {
     public DeliverToMiddleLevel(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal, IntakeSubsystem intake) {
-        addCommands(
-                new ParallelCommandGroup(
-                        new RaiseLift(vertical, VerticalLevel.Middle, 0.5),
-                        new ExtendLift(horizontal, HorizontalLevel.Middle)),
-                new OuttakeCube(intake),
-                new ReturnLift(vertical, horizontal)
-        );
-        addRequirements(vertical, horizontal, intake);
+        super(vertical, horizontal, intake, VerticalLevel.Middle, HorizontalLevel.Middle);
     }
 }

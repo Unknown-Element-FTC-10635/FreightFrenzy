@@ -7,15 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 
 @Autonomous
 public class RedDuck extends LinearOpMode {
     private Webcam1 webcam;
-
-    private Lift lift;
 
     private SampleMecanumDrive bot;
 
@@ -29,8 +26,6 @@ public class RedDuck extends LinearOpMode {
         webcam.startTeamelementColor();
 
         ducky = hardwareMap.get(DcMotorEx.class, "ducky");
-
-        lift = new Lift(hardwareMap, telemetry);
 
         bot = new SampleMecanumDrive(hardwareMap);
 
@@ -79,15 +74,12 @@ public class RedDuck extends LinearOpMode {
     private void navigateToLevel() {
         switch (elementPosition) {
             case 0:
-                lift.level0(true);
                 break;
 
             case 1:
-                lift.level1(true);
                 break;
 
             case 2:
-                lift.level2(true);
                 break;
         }
     }

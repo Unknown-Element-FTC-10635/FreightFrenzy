@@ -6,15 +6,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 
 @Autonomous
 public class BlueWarehouse extends LinearOpMode {
     private Webcam1 webcam;
-
-    private Lift lift;
 
     private SampleMecanumDrive bot;
 
@@ -24,8 +21,6 @@ public class BlueWarehouse extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         webcam = new Webcam1(hardwareMap);
         webcam.startTeamelementColor();
-
-        lift = new Lift(hardwareMap, telemetry);
 
         bot = new SampleMecanumDrive(hardwareMap);
 
@@ -80,14 +75,10 @@ public class BlueWarehouse extends LinearOpMode {
 
         // re-localize?
 
-        lift.toGroundPickUp();
 
         bot.followTrajectorySequence(throughGap);
 
-        lift.resetPickUp();
-
         bot.followTrajectorySequence(returnToHub);
-        lift.level2(false);
 
         bot.followTrajectorySequence(finalToWarehouse);
     }
@@ -95,15 +86,12 @@ public class BlueWarehouse extends LinearOpMode {
     private void navigateToLevel() {
         switch (elementPosition) {
             case 0:
-                lift.level0(true);
                 break;
 
             case 1:
-                lift.level1(true);
                 break;
 
             case 2:
-                lift.level2(true);
                 break;
         }
     }
