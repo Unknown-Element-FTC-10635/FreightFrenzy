@@ -31,18 +31,19 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
     }
 
     public HorizontalLiftSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
-        extension = hardwareMap.get(Motor.class, "extension");
+        extension = new Motor(hardwareMap, "extension", Motor.GoBILDA.RPM_312);
         extension.setRunMode(Motor.RunMode.PositionControl);
+
+        this.telemetry = telemetry;
     }
 
     @Override
     public void periodic() {
         if (moving) {
-            telemetry.addData("Horizontal Lift Position", this::getPosition);
+            telemetry.addData("Horizontal Lift Position", extension.getCurrentPosition());
         }
 
         telemetry.addData("Horizontal Lift Target", horizontalLevel.encoderLevel);
-        telemetry.update();
     }
 
     /**

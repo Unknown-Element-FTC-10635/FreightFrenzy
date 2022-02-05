@@ -31,4 +31,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public void stop() {
         intake.setPower(0);
     }
+
+    public boolean isSpinning() {return (intake.getPower() != 0);}
 }

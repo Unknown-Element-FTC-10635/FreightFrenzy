@@ -54,19 +54,14 @@ public class MeepMeepTesting {
                 // Creates a trajectory
                 .followTrajectorySequence(driveShim ->
                         driveShim.trajectorySequenceBuilder(new Pose2d(-36.0, 62, Math.toRadians(270)))
-                                .splineTo(new Vector2d(-20, 38), Math.toRadians(300))
+                                .lineTo(new Vector2d(-50, 50))
+                                .lineTo(new Vector2d(-63, 58))
+                                // do ducks
+                                .lineTo(new Vector2d(-63, 40))
+                                .lineTo(new Vector2d(-50, 25))
+                                .turn(Math.toRadians(90))
 
-                                .waitSeconds(1.5)
-                                .setReversed(true)
-
-                                .splineTo(new Vector2d(-36, 55), Math.toRadians(180))
-                                .setReversed(false)
-
-                                .lineToLinearHeading(new Pose2d(-65, 53, Math.toRadians(90)))
-
-                                .waitSeconds(3)
-
-                                .lineTo(new Vector2d(-60, 35))
+                                .lineTo(new Vector2d(-33, 25))
 
                                 .build()
                 );

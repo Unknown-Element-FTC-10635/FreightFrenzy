@@ -30,13 +30,17 @@ public class ExtendLift extends CommandBase {
     @Override
     public void execute() {
         if (liftSubsystem.atTargetPosition()) {
-            liftSubsystem.stop();
-            isFinished();
+            end(false);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return true;
+        return liftSubsystem.atTargetPosition();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        liftSubsystem.stop();
     }
 }

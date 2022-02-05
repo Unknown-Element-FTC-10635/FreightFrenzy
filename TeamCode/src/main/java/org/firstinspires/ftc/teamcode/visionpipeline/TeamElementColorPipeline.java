@@ -11,7 +11,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class TeamElementColorPipeline extends OpenCvPipeline {
-    private final Scalar LOWER_GREEN = new Scalar(50, 50, 50);
+    private final Scalar LOWER_GREEN = new Scalar(25, 50, 50);
     private final Scalar UPPER_GREEN = new Scalar(100, 255, 255);
 
     private final Rect LEFTBARCODE = new Rect(0, 24, 266, 400);

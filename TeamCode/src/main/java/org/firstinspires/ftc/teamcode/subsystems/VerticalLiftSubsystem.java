@@ -31,8 +31,8 @@ public class VerticalLiftSubsystem extends SubsystemBase {
     }
 
     public VerticalLiftSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
-        Motor leftLift = hardwareMap.get(Motor.class, "liftLeft");
-        Motor rightLift = hardwareMap.get(Motor.class, "liftRight");
+        Motor leftLift = new Motor(hardwareMap, "liftLeft", Motor.GoBILDA.RPM_312);
+        Motor rightLift =new Motor(hardwareMap, "liftRight", Motor.GoBILDA.RPM_312);
         rightLift.setInverted(true);
 
         liftMotors = new MotorGroup(leftLift, rightLift);
@@ -46,7 +46,6 @@ public class VerticalLiftSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         telemetry.addData("Vertical Lift Level:", liftLevel);
-        telemetry.update();
     }
 
     /**

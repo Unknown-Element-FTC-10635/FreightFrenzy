@@ -7,7 +7,7 @@ public class DuckWheelSubsystem {
     private final Motor ducky;
 
     public DuckWheelSubsystem(HardwareMap hardwareMap) {
-        ducky = hardwareMap.get(Motor.class, "ducky");
+        ducky = new Motor(hardwareMap, "ducky", Motor.GoBILDA.RPM_435);
     }
 
     /**
@@ -30,4 +30,6 @@ public class DuckWheelSubsystem {
     public void stop() {
         ducky.stopMotor();
     }
+
+    public boolean isSpinning() { return (ducky.getCorrectedVelocity() != 0);}
 }
