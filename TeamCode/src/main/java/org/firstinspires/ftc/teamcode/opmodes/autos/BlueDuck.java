@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.commandgroup.DeliverToBottomLevel;
 import org.firstinspires.ftc.teamcode.commandgroup.DeliverToMiddleLevel;
 import org.firstinspires.ftc.teamcode.commandgroup.DeliverToTopLevel;
+import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
@@ -43,6 +44,7 @@ public class BlueDuck extends CommandOpMode {
         webcam = new Webcam1(hardwareMap);
 
         drive = new SampleMecanumDrive(hardwareMap);
+
         duck = new DuckWheelSubsystem(hardwareMap);
         horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
         verticalLift = new VerticalLiftSubsystem(hardwareMap, telemetry);
@@ -56,7 +58,7 @@ public class BlueDuck extends CommandOpMode {
 
         TrajectorySequence toDuck = drive.trajectorySequenceBuilder(start)
                 .lineTo(new Vector2d(-50, 50))
-                .lineTo(new Vector2d(-63, 55))
+                .lineTo(new Vector2d(-62, 55))
                 .build();
 
         TrajectorySequence toHub = drive.trajectorySequenceBuilder(toDuck.end())
@@ -79,46 +81,48 @@ public class BlueDuck extends CommandOpMode {
 
         webcam.startTeamelementColor();
 
-        telemetry.addLine("Ready to Start");
-        telemetry.update();
-
-        waitForStart();
-
-        webcam.stop();
-
         telemetry.addLine("Scheduling Tasks");
         telemetry.update();
 
         schedule(
             new SequentialCommandGroup(
+                new InstantCommand(() -> webcam.stop()),
                 new FollowTrajectoryCommand(drive, toDuck),
                 new ParallelDeadlineGroup(
-                    new WaitCommand(2000),
+                    new WaitCommand(3000),
                     new SpinCarousel(duck, true)
                 ),
                 new FollowTrajectoryCommand(drive, toHub),
                 new ParallelCommandGroup(
-                        new FollowTrajectoryCommand(drive, approachHub),
-                        new InstantCommand(() -> {
-                            switch (elementPosition) {
-                                case 0:
-                                    new DeliverToBottomLevel(verticalLift, horizontalLift, intake);
-                                    break;
-                                case 1:
-                                    new DeliverToMiddleLevel(verticalLift, horizontalLift, intake);
-                                    break;
-                                case 2:
-                                    new DeliverToTopLevel(verticalLift, horizontalLift, intake);
-                                    break;
-                            }
-                        }
-                        )
+                    new FollowTrajectoryCommand(drive, approachHub),
+                    new DeliverToTopLevel(verticalLift, horizontalLift, intake)
                 ),
-                new FollowTrajectoryCommand(drive, toSquare)
+                /*
+                new InstantCommand(() -> {
+                    switch (elementPosition) {
+                        case 0:
+                            new DeliverToBottomLevel(verticalLift, horizontalLift, intake);
+                            break;
+                        case 1:
+                            new DeliverToMiddleLevel(verticalLift, horizontalLift, intake);
+                            break;
+                        case 2:
+                            new DeliverToTopLevel(verticalLift, horizontalLift, intake);
+                            break;
+                    }
+                }),*/
+                new ParallelCommandGroup(
+                    new FollowTrajectoryCommand(drive, toSquare),
+                    new ReturnLift(verticalLift, horizontalLift)
+                )
             )
         );
 
-        register();
+        register(verticalLift, horizontalLift, intake, duck);
+
+        telemetry.addLine("Ready to Start");
+        telemetry.update();
+
     }
 
 

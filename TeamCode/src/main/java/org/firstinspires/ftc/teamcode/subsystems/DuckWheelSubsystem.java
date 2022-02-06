@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class DuckWheelSubsystem {
+public class DuckWheelSubsystem extends SubsystemBase {
     private final Motor ducky;
 
     public DuckWheelSubsystem(HardwareMap hardwareMap) {

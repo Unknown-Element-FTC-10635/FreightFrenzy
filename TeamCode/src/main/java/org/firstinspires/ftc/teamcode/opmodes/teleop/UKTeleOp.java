@@ -3,30 +3,21 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
-
 @TeleOp(name = "TeleOp")
 public class UKTeleOp extends OpMode {
-    DcMotorEx leftFront, leftRear, rightRear, rightFront;
-    CRServo tapeOut, tapePitch;
-    Servo tapeYaw;
-
-    HorizontalLiftSubsystem extension;
-    VerticalLiftSubsystem liftSubsystem;
-    IntakeSubsystem intake;
-    DuckWheelSubsystem ducky;
-    LimitSwitchSubsystem leftLiftSwitch, rightLiftSwitch, topSwitch;
+    DcMotorEx leftFront, leftRear, rightRear, rightFront, ducky, liftLeft, liftRight, extension;
+    CRServo intake, tapeOut;
+    Servo tapeYaw, tapePitch;
 
     ElapsedTime time;
+
+    int tapeOutValue = 0;
 
     @Override
     public void init() {
@@ -38,15 +29,22 @@ public class UKTeleOp extends OpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        extension = new HorizontalLiftSubsystem(hardwareMap, telemetry);
-        liftSubsystem = new VerticalLiftSubsystem(hardwareMap, telemetry);
-        ducky = new DuckWheelSubsystem(hardwareMap);
-        leftLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "LeftLimit");
-        rightLiftSwitch = new LimitSwitchSubsystem(hardwareMap, "RightLimit");
-        topSwitch = new LimitSwitchSubsystem(hardwareMap, "TopLimit");
-        intake = new IntakeSubsystem(hardwareMap);
+        ducky = hardwareMap.get(DcMotorEx.class, "ducky");
 
-        tapePitch = hardwareMap.get(CRServo.class, "tapePitch");
+        extension = hardwareMap.get(DcMotorEx.class, "extension");
+
+        extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        liftLeft = hardwareMap.get(DcMotorEx.class, "liftLeft");
+        liftRight = hardwareMap.get(DcMotorEx.class, "liftRight");
+
+        liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        intake = hardwareMap.get(CRServo.class, "intake");
+        tapePitch = hardwareMap.get(Servo.class, "tapePitch");
         tapeOut = hardwareMap.get(CRServo.class, "tapeOut");
         tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
 
@@ -65,54 +63,54 @@ public class UKTeleOp extends OpMode {
         rightRear.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) + gamepad1.right_stick_x));
         rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
 
-        tapePitch.setPower(gamepad2.right_stick_y * 0.1);
-        tapeYaw.setPosition(tapeYaw.getPosition() + (0.005 * Math.signum(gamepad2.left_stick_x)));
+        tapePitch.setPosition(tapePitch.getPosition() + (0.001 * -Math.signum(gamepad2.right_stick_y)));
+        tapeYaw.setPosition(tapeYaw.getPosition() + ((0.0025 - (tapeOutValue * 0.0000005)) * -Math.signum(gamepad2.left_stick_x)));
 
-        float liftPower = gamepad2.right_trigger - gamepad2.left_trigger;
-        if (leftLiftSwitch.isPressed() || leftLiftSwitch.isPressed()) {
-            liftPower = Math.abs(liftPower);
-        }
-        liftSubsystem.setPower(liftPower);
+        liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        float liftPower = (gamepad2.right_trigger - gamepad2.left_trigger);
+        liftLeft.setPower(liftPower);
+        liftRight.setPower(liftPower);
 
         if (gamepad1.left_bumper) {
-            extension.in();
-        } else if (gamepad1.right_bumper && topSwitch.isPressed()) {
-            extension.out();
+            extension.setPower(0.5);
+        } else if (gamepad1.right_bumper) {
+            extension.setPower(-0.5);
         } else {
-            extension.stop();
+            extension.setPower(0);
         }
 
-        // Handles the duck carousel
         if (gamepad1.dpad_left) {
-            ducky.left();
+            ducky.setPower(-0.55);
         } else if (gamepad1.dpad_right) {
-            ducky.right();
+            ducky.setPower(0.55);
         } else if (gamepad1.dpad_down) {
-            ducky.stop();
+            ducky.setPower(0);
         }
 
-        // Handles the intake
         if (gamepad1.square) {
-            intake.in();
+            intake.setPower(1);
         } else if (gamepad1.circle) {
-            intake.out();
+            intake.setPower(-1);
         }
         if (gamepad1.cross) {
-            intake.stop();
+            intake.setPower(0);
         }
 
-        // Handles the tape measure extension and retraction
         if (gamepad2.x) {
+            tapeOutValue--;
             tapeOut.setPower(-1);
         } else if (gamepad2.b) {
+            tapeOutValue++;
             tapeOut.setPower(1);
         } else {
             tapeOut.setPower(0);
         }
 
-        telemetry.addData("Lift:", liftSubsystem.getPosition());
-        telemetry.addData("Top Switch:", topSwitch.isPressed());
-        telemetry.addData("Extension:", extension.getPosition());
+        telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());
+        telemetry.addData("Right Lift:", liftRight.getCurrentPosition());
+        telemetry.addData("Extension:", extension.getCurrentPosition());
+        telemetry.addData("Tape Out:", tapeOutValue);
         telemetry.addData("Cycle Time:", time.milliseconds());
         telemetry.update();
     }

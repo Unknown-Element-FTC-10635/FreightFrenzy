@@ -32,5 +32,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intake.setPower(0);
     }
 
-    public boolean isSpinning() {return (intake.getPower() != 0);}
+    public boolean isSpinning() {
+        return (intake.getPower() != 0);
+    }
 }

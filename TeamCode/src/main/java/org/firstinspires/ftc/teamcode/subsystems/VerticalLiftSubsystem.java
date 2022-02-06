@@ -2,17 +2,22 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class VerticalLiftSubsystem extends SubsystemBase {
-    private final MotorGroup liftMotors;
+    private final MotorEx liftLeft, liftRight;
+    private final Motor.Encoder liftLeftEn, liftRightEn;
+
 
     private final Telemetry telemetry;
 
     private VerticalLevel liftLevel = VerticalLevel.Home;
+
+    private double targetFloor, targetCeiling;
 
     /**
      * Enum of pre-saved position
@@ -25,18 +30,26 @@ public class VerticalLiftSubsystem extends SubsystemBase {
         Ground(-400); // -400
 
         public int encoderLevel;
+
         VerticalLevel(int eLevel) {
             encoderLevel = eLevel;
         }
     }
 
     public VerticalLiftSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
-        Motor leftLift = new Motor(hardwareMap, "liftLeft", Motor.GoBILDA.RPM_312);
-        Motor rightLift =new Motor(hardwareMap, "liftRight", Motor.GoBILDA.RPM_312);
-        rightLift.setInverted(true);
+        liftLeft = new MotorEx(hardwareMap, "liftLeft", Motor.GoBILDA.RPM_312);
+        liftLeft.setRunMode(Motor.RunMode.PositionControl);
 
-        liftMotors = new MotorGroup(leftLift, rightLift);
-        liftMotors.setRunMode(Motor.RunMode.PositionControl);
+        liftLeftEn = liftLeft.encoder;
+        liftLeftEn.reset();
+
+        liftRight = new MotorEx(hardwareMap, "liftRight", Motor.GoBILDA.RPM_312);
+        liftRight.setRunMode(Motor.RunMode.PositionControl);
+        liftRight.setInverted(true);
+
+        liftRightEn = liftRight.encoder;
+        liftRightEn.reset();
+        liftRight.resetEncoder();
 
         this.telemetry = telemetry;
     }
@@ -47,30 +60,41 @@ public class VerticalLiftSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         telemetry.addData("Vertical Lift Level:", liftLevel);
+        telemetry.addData("Left Lift", liftLeftEn.getPosition());
+        telemetry.addData("Right Lift", liftRightEn.getPosition());
+        telemetry.update();
     }
 
     /**
      * Sets the power of both motors
+     *
      * @param power speed of the motor
      */
     public void setPower(double power) {
-        liftMotors.set(power);
+        liftLeft.set(power);
+        liftRight.set(power);
     }
 
     /**
      * Travels to one of the pre-saved positions
+     *
      * @param level the level the lift should go to
      */
     public void liftToPosition(VerticalLevel level) {
-        liftMotors.setTargetPosition(level.encoderLevel);
+        liftLeft.setTargetPosition(level.encoderLevel);
+        liftRight.setTargetPosition(level.encoderLevel);
         liftLevel = level;
+
+        targetFloor = level.encoderLevel - level.encoderLevel * 0.05;
+        targetCeiling = level.encoderLevel + level.encoderLevel * 0.05;
     }
 
     /**
      * Stops the two motors
      */
     public void stop() {
-        liftMotors.stopMotor();
+        liftLeft.stopMotor();
+        liftRight.stopMotor();
     }
 
     /**
@@ -78,21 +102,28 @@ public class VerticalLiftSubsystem extends SubsystemBase {
      */
     public void reset() {
         liftLevel = VerticalLevel.Home;
-        liftMotors.resetEncoder();
+        liftLeftEn.reset();
+        liftRightEn.reset();
     }
 
     /**
      * @return the motors' current encoder value
      */
     public int getPosition() {
-        return liftMotors.getCurrentPosition();
+        return (liftLeftEn.getPosition() + liftRightEn.getPosition()) / 2;
     }
 
     /**
      * @return whether the motors have reached their position
      */
     public boolean atTargetPosition() {
-        return liftMotors.atTargetPosition();
+        return liftLeft.atTargetPosition() || liftRight.atTargetPosition();
+        //return (liftLeftEn.getPosition() > targetFloor && liftLeftEn.getPosition() < targetCeiling)
+        //        || (liftRightEn.getPosition() > targetFloor && liftRightEn.getPosition() < targetCeiling);
+
+        //return (liftLeft.atTargetPosition() || liftRight.atTargetPosition());
+        //return (Math.abs(liftLeftEn.getPosition()) > Math.abs(liftLevel.encoderLevel)
+        // || Math.abs(liftRightEn.getPosition()) > Math.abs(liftLevel.encoderLevel));
     }
 
 }

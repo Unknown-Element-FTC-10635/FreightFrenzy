@@ -9,22 +9,23 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class HorizontalLiftSubsystem extends SubsystemBase {
     private final Motor extension;
 
-    private final HorizontalLevel horizontalLevel = HorizontalLevel.Home;
+    private HorizontalLevel horizontalLevel = HorizontalLevel.Home;
 
     private Telemetry telemetry;
 
-    private boolean moving = false;
+    private double targetFloor, targetCeiling;
 
     /**
      * Enum of pre-saved positions
      */
     public enum HorizontalLevel {
-        Top(-1100), // 1100
-        Middle(-800), // 800
-        Bottom(-550), // 550
+        Top(1100), // 1100
+        Middle(800), // 800
+        Bottom(550), // 550
         Home(0); // 0
 
         public int encoderLevel;
+
         HorizontalLevel(int eLevel) {
             encoderLevel = eLevel;
         }
@@ -33,26 +34,29 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
     public HorizontalLiftSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
         extension = new Motor(hardwareMap, "extension", Motor.GoBILDA.RPM_312);
         extension.setRunMode(Motor.RunMode.PositionControl);
+        extension.setInverted(true);
+        extension.resetEncoder();
 
         this.telemetry = telemetry;
     }
 
     @Override
     public void periodic() {
-        if (moving) {
-            telemetry.addData("Horizontal Lift Position", extension.getCurrentPosition());
-        }
-
-        telemetry.addData("Horizontal Lift Target", horizontalLevel.encoderLevel);
+        telemetry.addData("Horizontal Lift Position", extension.getCurrentPosition());
+        telemetry.addData("Horizontal Lift Target", horizontalLevel);
     }
 
     /**
      * Travels to one of the pre-saved positions
+     *
      * @param position the position the horizontal lift should go to
      */
     public void extendToPosition(HorizontalLevel position) {
         extension.setTargetPosition(position.encoderLevel);
-        moving = true;
+        horizontalLevel = position;
+
+        targetFloor = position.encoderLevel - position.encoderLevel * 0.05;
+        targetCeiling = position.encoderLevel + position.encoderLevel * 0.05;
     }
 
     /**
@@ -60,7 +64,6 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
      */
     public void in() {
         extension.set(0.5);
-        moving = true;
     }
 
     /**
@@ -68,7 +71,6 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
      */
     public void out() {
         extension.set(-0.5);
-        moving = true;
     }
 
     /**
@@ -76,7 +78,13 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
      */
     public void stop() {
         extension.stopMotor();
-        moving = false;
+    }
+
+    /**
+     * Resets the lift encoder
+     */
+    public void reset() {
+        extension.resetEncoder();
     }
 
     /**
@@ -90,6 +98,8 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
      * @return whether the motor has reached it's position
      */
     public boolean atTargetPosition() {
+        //return (extension.getCurrentPosition() > targetFloor && extension.getCurrentPosition() < targetCeiling);
+        //          -1100                         -1045                                             -1155
         return extension.atTargetPosition();
     }
 }

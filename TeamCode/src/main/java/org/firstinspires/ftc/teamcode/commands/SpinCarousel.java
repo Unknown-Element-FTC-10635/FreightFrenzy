@@ -14,14 +14,15 @@ public class SpinCarousel extends CommandBase {
     public SpinCarousel(DuckWheelSubsystem ducky, boolean blue) {
         this.ducky = ducky;
         blueDirection = blue;
+        addRequirements(ducky);
     }
 
     @Override
     public void initialize() {
         if (blueDirection) {
-            ducky.left();
-        } else {
             ducky.right();
+        } else {
+            ducky.left();
         }
     }
 
