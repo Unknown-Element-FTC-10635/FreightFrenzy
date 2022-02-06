@@ -158,6 +158,13 @@ public class Lift {
         liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        extension.setPower(-0.5);
+        while (extension.getCurrentPosition() > horizontalPosition) {
+            telemetry.addData("Horizontal Position", extension.getCurrentPosition());
+            telemetry.update();
+        }
+        extension.setPower(0);
+
         liftLeft.setPower(0.6);
         liftRight.setPower(0.6);
         while (liftLeft.getCurrentPosition() < liftPosition || liftRight.getCurrentPosition() < liftPosition) {
@@ -167,13 +174,6 @@ public class Lift {
         }
         liftLeft.setPower(0);
         liftRight.setPower(0);
-
-        extension.setPower(-0.5);
-        while (extension.getCurrentPosition() > horizontalPosition) {
-            telemetry.addData("Horizontal Position", extension.getCurrentPosition());
-            telemetry.update();
-        }
-        extension.setPower(0);
 
         // Push out element
         intake.setPower(-0.4);

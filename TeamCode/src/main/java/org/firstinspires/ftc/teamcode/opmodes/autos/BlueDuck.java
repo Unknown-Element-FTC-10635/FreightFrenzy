@@ -37,19 +37,19 @@ public class BlueDuck extends LinearOpMode {
         Pose2d start = new Pose2d(-36.0, 62, Math.toRadians(270));
         bot.setPoseEstimate(start);
 
-        TrajectorySequence toHub = bot.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(-21, 39), Math.toRadians(300))
-                .build();
-
-        TrajectorySequence toDuck = bot.trajectorySequenceBuilder(toHub.end())
+        TrajectorySequence toDuck = bot.trajectorySequenceBuilder(start)
                 .setReversed(true)
-                .lineToLinearHeading(new Pose2d(-50, 50, Math.toRadians(270)))
+                .lineTo(new Vector2d(-50, 50))
                 .setReversed(false)
                 .lineTo(new Vector2d(-60, 56))
                 .build();
 
-        TrajectorySequence toSquare = bot.trajectorySequenceBuilder(toDuck.end())
-                .lineTo(new Vector2d(-58, 39))
+        TrajectorySequence toHub = bot.trajectorySequenceBuilder(toDuck.end())
+                .splineTo(new Vector2d(-25, 30), Math.toRadians(0))
+                .build();
+
+        TrajectorySequence toSquare = bot.trajectorySequenceBuilder(toHub.end())
+                .lineTo(new Vector2d(-63, 37))
                 .build();
 
 
@@ -64,15 +64,14 @@ public class BlueDuck extends LinearOpMode {
         telemetry.addData("Going to level:", elementPosition);
         telemetry.update();
 
+        bot.followTrajectorySequence(toDuck);
+        ducky.setPower(0.45);
+        sleep(2500);
+        ducky.setPower(0);
+
         bot.followTrajectorySequence(toHub);
         navigateToLevel();
 
-        bot.followTrajectorySequence(toDuck);
-        ducky.setPower(0.45);
-
-        sleep(2500);
-
-        ducky.setPower(0);
         bot.followTrajectorySequence(toSquare);
     }
 
