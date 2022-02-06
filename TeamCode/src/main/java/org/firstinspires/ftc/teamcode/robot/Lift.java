@@ -49,21 +49,21 @@ public class Lift {
     }
 
     public void level0(boolean returnHome) {
-        final int LIFT_POSITION = 200;
-        final int HORIZONTAL_POSITION = -550;
+        final int LIFT_POSITION = 400;
+        final int HORIZONTAL_POSITION = -600;
 
         liftExtendDeliver(LIFT_POSITION, HORIZONTAL_POSITION, returnHome);
     }
 
     public void level1(boolean returnHome) {
-        final int LIFT_POSITION = 800;
-        final int HORIZONTAL_POSITION = -800;
+        final int LIFT_POSITION = 1200;
+        final int HORIZONTAL_POSITION = -900;
 
         liftExtendDeliver(LIFT_POSITION, HORIZONTAL_POSITION, returnHome);
     }
 
     public void level2(boolean returnHome) {
-        final int LIFT_POSITION = 1500;
+        final int LIFT_POSITION = 1700;
         final int HORIZONTAL_POSITION = -1100;
 
         liftExtendDeliver(LIFT_POSITION, HORIZONTAL_POSITION, returnHome);
@@ -158,13 +158,6 @@ public class Lift {
         liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        extension.setPower(-0.5);
-        while (extension.getCurrentPosition() > horizontalPosition) {
-            telemetry.addData("Horizontal Position", extension.getCurrentPosition());
-            telemetry.update();
-        }
-        extension.setPower(0);
-
         liftLeft.setPower(0.6);
         liftRight.setPower(0.6);
         while (liftLeft.getCurrentPosition() < liftPosition || liftRight.getCurrentPosition() < liftPosition) {
@@ -174,6 +167,13 @@ public class Lift {
         }
         liftLeft.setPower(0);
         liftRight.setPower(0);
+
+        extension.setPower(-0.5);
+        while (extension.getCurrentPosition() > horizontalPosition) {
+            telemetry.addData("Horizontal Position", extension.getCurrentPosition());
+            telemetry.update();
+        }
+        extension.setPower(0);
 
         // Push out element
         intake.setPower(-0.4);
@@ -192,7 +192,7 @@ public class Lift {
         extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // Retract
         extension.setPower(0.5);
-        while (extension.getCurrentPosition() < (horizontalPosition + 50) * -1) {
+        while (extension.getCurrentPosition() < (horizontalPosition - 50) * -1) {
             telemetry.addData("Horizontal Position", extension.getCurrentPosition());
             telemetry.update();
         }
@@ -206,5 +206,17 @@ public class Lift {
         liftLeft.setPower(0);
         liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void pushOut() {
+        extension.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extension.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        extension.setPower(-0.5);
+        intake.setPower(0.2);
+        while (extension.getCurrentPosition() > -200) { }
+        extension.setPower(0);
+        intake.setPower(0);
+
     }
 }

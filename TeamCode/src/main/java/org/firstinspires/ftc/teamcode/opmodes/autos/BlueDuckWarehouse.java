@@ -37,18 +37,24 @@ public class BlueDuckWarehouse extends LinearOpMode {
         Pose2d start = new Pose2d(-36.0, 62, Math.toRadians(270));
         bot.setPoseEstimate(start);
 
-        TrajectorySequence toHub = bot.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(-21, 39), Math.toRadians(300))
-                .build();
-
-        TrajectorySequence toDuck = bot.trajectorySequenceBuilder(toHub.end())
+        TrajectorySequence toDuck = bot.trajectorySequenceBuilder(start)
                 .setReversed(true)
-                .lineToLinearHeading(new Pose2d(-50, 50, Math.toRadians(270)))
+                .lineTo(new Vector2d(-50, 50))
                 .setReversed(false)
                 .lineTo(new Vector2d(-60, 56))
                 .build();
 
-        TrajectorySequence toWarehouse = bot.trajectorySequenceBuilder(toDuck.end())
+        TrajectorySequence toHub = bot.trajectorySequenceBuilder(toDuck.end())
+                .lineTo(new Vector2d(-63, 40))
+                .lineTo(new Vector2d(-50, 25))
+                .turn(Math.toRadians(90))
+                .lineTo(new Vector2d(-33, 22))
+
+                .build();
+
+        TrajectorySequence toWarehouse = bot.trajectorySequenceBuilder(toHub.end())
+                .lineTo(new Vector2d(-50, 25))
+                .lineTo(new Vector2d(-60, 40))
                 .lineToLinearHeading(new Pose2d(8, 70, Math.toRadians(10)))
                 .lineTo(new Vector2d(50, 70))
                 .build();
@@ -64,15 +70,16 @@ public class BlueDuckWarehouse extends LinearOpMode {
         telemetry.addData("Going to level:", elementPosition);
         telemetry.update();
 
-        bot.followTrajectorySequence(toHub);
-        navigateToLevel();
+        lift.pushOut();
 
         bot.followTrajectorySequence(toDuck);
         ducky.setPower(0.45);
-
         sleep(2500);
-
         ducky.setPower(0);
+
+        bot.followTrajectorySequence(toHub);
+        navigateToLevel();
+
         bot.followTrajectorySequence(toWarehouse);
     }
 

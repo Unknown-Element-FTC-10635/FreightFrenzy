@@ -45,11 +45,17 @@ public class BlueDuck extends LinearOpMode {
                 .build();
 
         TrajectorySequence toHub = bot.trajectorySequenceBuilder(toDuck.end())
-                .splineTo(new Vector2d(-25, 30), Math.toRadians(0))
+                .lineTo(new Vector2d(-63, 40))
+                .lineTo(new Vector2d(-50, 25))
+                .turn(Math.toRadians(90))
+                .lineTo(new Vector2d(-33, 22))
+
                 .build();
 
+
         TrajectorySequence toSquare = bot.trajectorySequenceBuilder(toHub.end())
-                .lineTo(new Vector2d(-63, 37))
+                .lineTo(new Vector2d(-45, 22))
+                .lineTo(new Vector2d(-62, 35))
                 .build();
 
 
@@ -63,6 +69,8 @@ public class BlueDuck extends LinearOpMode {
 
         telemetry.addData("Going to level:", elementPosition);
         telemetry.update();
+
+        lift.pushOut();
 
         bot.followTrajectorySequence(toDuck);
         ducky.setPower(0.45);
