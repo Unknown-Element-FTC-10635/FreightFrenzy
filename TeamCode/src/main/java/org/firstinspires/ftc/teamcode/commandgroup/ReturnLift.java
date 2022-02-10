@@ -6,13 +6,14 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.commands.ExtendLift;
 import org.firstinspires.ftc.teamcode.commands.RaiseLift;
+import org.firstinspires.ftc.teamcode.commands.RetractLift;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
 public class ReturnLift extends ParallelCommandGroup {
     public ReturnLift(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal) {
         addCommands(
-                new ExtendLift(horizontal, HorizontalLiftSubsystem.HorizontalLevel.Home, false),
+                new RetractLift(horizontal),
                 new SequentialCommandGroup(
                         new WaitCommand(1000),
                         new RaiseLift(vertical, VerticalLiftSubsystem.VerticalLevel.Home, 0.5)

@@ -2,88 +2,126 @@ package org.firstinspires.ftc.teamcode.opmodes.autos;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.teamcode.commandgroup.DeliverToBottomLevel;
+import org.firstinspires.ftc.teamcode.commandgroup.DeliverToMiddleLevel;
+import org.firstinspires.ftc.teamcode.commandgroup.DeliverToTopLevel;
+import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
+import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
+import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.robot.Webcam1;
+import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
 @Autonomous
-public class BlueDuckWarehouse extends LinearOpMode {
+public class BlueDuckWarehouse extends CommandOpMode {
     private Webcam1 webcam;
-
-    private SampleMecanumDrive bot;
-
     private int elementPosition = 2;
 
-    private DcMotorEx ducky;
+    private SampleMecanumDrive drive;
+    private DuckWheelSubsystem duck;
+    private HorizontalLiftSubsystem horizontalLift;
+    private VerticalLiftSubsystem verticalLift;
+    private IntakeSubsystem intake;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void initialize() {
+        telemetry.addLine("Creating Subsystems");
+        telemetry.update();
+
         webcam = new Webcam1(hardwareMap);
-        webcam.startTeamelementColor();
 
-        ducky = hardwareMap.get(DcMotorEx.class, "ducky");
+        drive = new SampleMecanumDrive(hardwareMap);
 
-        bot = new SampleMecanumDrive(hardwareMap);
+        duck = new DuckWheelSubsystem(hardwareMap);
+        horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
+        verticalLift = new VerticalLiftSubsystem(hardwareMap, telemetry);
+        intake = new IntakeSubsystem(hardwareMap);
+
+        telemetry.addLine("Creating Paths");
+        telemetry.update();
 
         Pose2d start = new Pose2d(-36.0, 62, Math.toRadians(270));
-        bot.setPoseEstimate(start);
+        drive.setPoseEstimate(start);
 
-        TrajectorySequence toHub = bot.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(-21, 39), Math.toRadians(300))
+        TrajectorySequence toDuck = drive.trajectorySequenceBuilder(start)
+                .lineTo(new Vector2d(-50, 50))
+                .lineTo(new Vector2d(-62, 55))
                 .build();
 
-        TrajectorySequence toDuck = bot.trajectorySequenceBuilder(toHub.end())
-                .setReversed(true)
-                .lineToLinearHeading(new Pose2d(-50, 50, Math.toRadians(270)))
-                .setReversed(false)
-                .lineTo(new Vector2d(-60, 56))
+        TrajectorySequence toHub = drive.trajectorySequenceBuilder(toDuck.end())
+                .lineTo(new Vector2d(-63, 40))
+                .lineTo(new Vector2d(-50, 25))
+                .turn(Math.toRadians(90))
                 .build();
 
-        TrajectorySequence toWarehouse = bot.trajectorySequenceBuilder(toDuck.end())
+        TrajectorySequence approachHub = drive.trajectorySequenceBuilder(toHub.end())
+                .lineTo(new Vector2d(-33, 25))
+                .build();
+
+        TrajectorySequence toWarehouse = drive.trajectorySequenceBuilder(toHub.end())
+                .lineTo(new Vector2d(-50, 25))
+                .lineTo(new Vector2d(-60, 40))
                 .lineToLinearHeading(new Pose2d(8, 70, Math.toRadians(10)))
                 .lineTo(new Vector2d(50, 70))
                 .build();
 
-        telemetry.addLine("Ready for Start");
+        telemetry.addLine("Starting Webcam");
         telemetry.update();
 
-        waitForStart();
+        webcam.startTeamelementColor();
 
-        elementPosition = webcam.getElementPosition();
-        webcam.stop();
-
-        telemetry.addData("Going to level:", elementPosition);
+        telemetry.addLine("Scheduling Tasks");
         telemetry.update();
 
-        bot.followTrajectorySequence(toHub);
-        navigateToLevel();
+        schedule(
+            new SequentialCommandGroup(
+                new InstantCommand(() -> webcam.stop()),
+                new FollowTrajectoryCommand(drive, toDuck),
+                new ParallelDeadlineGroup(
+                    new WaitCommand(3000),
+                    new SpinCarousel(duck, true)
+                ),
+                new FollowTrajectoryCommand(drive, toHub),
+                new ParallelCommandGroup(
+                    new FollowTrajectoryCommand(drive, approachHub),
+                    new InstantCommand(() -> {
+                        switch (elementPosition) {
+                            case 0:
+                                new DeliverToBottomLevel(verticalLift, horizontalLift, intake);
+                                break;
+                            case 1:
+                                new DeliverToMiddleLevel(verticalLift, horizontalLift, intake);
+                                break;
+                            case 2:
+                                new DeliverToTopLevel(verticalLift, horizontalLift, intake);
+                                break;
+                        }
+                    })
+                ),
+                new ParallelCommandGroup(
+                        new FollowTrajectoryCommand(drive, toWarehouse),
+                        new ReturnLift(verticalLift, horizontalLift)
+                )
+            )
+        );
 
-        bot.followTrajectorySequence(toDuck);
-        ducky.setPower(0.45);
+        register(verticalLift, horizontalLift, intake, duck);
 
-        sleep(2500);
+        telemetry.addLine("Ready to Start");
+        telemetry.update();
 
-        ducky.setPower(0);
-        bot.followTrajectorySequence(toWarehouse);
     }
 
-    private void navigateToLevel() {
-        switch (elementPosition) {
-            case 0:
-
-                break;
-
-            case 1:
-
-                break;
-
-            case 2:
-
-                break;
-        }
-    }
 }

@@ -44,6 +44,7 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
     public void periodic() {
         telemetry.addData("Horizontal Lift Position", extension.getCurrentPosition());
         telemetry.addData("Horizontal Lift Target", horizontalLevel);
+        telemetry.addData("Horizontal Lift At Position", atTargetPosition());
     }
 
     /**
@@ -100,6 +101,13 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
     public boolean atTargetPosition() {
         //return (extension.getCurrentPosition() > targetFloor && extension.getCurrentPosition() < targetCeiling);
         //          -1100                         -1045                                             -1155
-        return extension.atTargetPosition();
+
+        //return extension.atTargetPosition();
+
+        if (horizontalLevel != HorizontalLevel.Home) {
+            return (Math.abs(extension.getCurrentPosition()) > Math.abs(horizontalLevel.encoderLevel));
+        } else {
+            return (Math.abs(extension.getCurrentPosition()) < 50);
+        }
     }
 }

@@ -44,9 +44,10 @@ public class UKTeleOp extends OpMode {
         liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         intake = hardwareMap.get(CRServo.class, "intake");
-        tapePitch = hardwareMap.get(Servo.class, "tapePitch");
         tapeOut = hardwareMap.get(CRServo.class, "tapeOut");
         tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
+        tapePitch = hardwareMap.get(Servo.class, "tapePitch");
+        tapePitch.setPosition(0.7);
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
@@ -111,6 +112,7 @@ public class UKTeleOp extends OpMode {
         telemetry.addData("Right Lift:", liftRight.getCurrentPosition());
         telemetry.addData("Extension:", extension.getCurrentPosition());
         telemetry.addData("Tape Out:", tapeOutValue);
+        telemetry.addData("Tape Pitch:", tapePitch.getPosition());
         telemetry.addData("Cycle Time:", time.milliseconds());
         telemetry.update();
     }

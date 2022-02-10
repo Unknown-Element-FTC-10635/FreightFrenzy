@@ -10,25 +10,18 @@ public class ExtendLift extends CommandBase {
     private final HorizontalLiftSubsystem liftSubsystem;
     private final HorizontalLevel position;
 
-    private final boolean out;
-
     // True -> out; False -> in;
-    public ExtendLift(HorizontalLiftSubsystem subsystem, HorizontalLevel position, boolean out) {
+    public ExtendLift(HorizontalLiftSubsystem subsystem, HorizontalLevel position) {
         liftSubsystem = subsystem;
         addRequirements(liftSubsystem);
 
         this.position = position;
-        this.out = out;
     }
 
     @Override
     public void initialize() {
         liftSubsystem.extendToPosition(position);
-        if (out) {
-            liftSubsystem.out();
-        } else {
-            liftSubsystem.in();
-        }
+        liftSubsystem.out();
     }
 
     @Override
@@ -39,5 +32,9 @@ public class ExtendLift extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         liftSubsystem.stop();
+    }
+
+    public HorizontalLiftSubsystem getLiftSubsystem() {
+        return liftSubsystem;
     }
 }

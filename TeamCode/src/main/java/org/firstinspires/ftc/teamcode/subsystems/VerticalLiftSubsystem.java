@@ -117,13 +117,19 @@ public class VerticalLiftSubsystem extends SubsystemBase {
      * @return whether the motors have reached their position
      */
     public boolean atTargetPosition() {
-        return liftLeft.atTargetPosition() || liftRight.atTargetPosition();
+        // return liftLeft.atTargetPosition() || liftRight.atTargetPosition();
         //return (liftLeftEn.getPosition() > targetFloor && liftLeftEn.getPosition() < targetCeiling)
         //        || (liftRightEn.getPosition() > targetFloor && liftRightEn.getPosition() < targetCeiling);
 
         //return (liftLeft.atTargetPosition() || liftRight.atTargetPosition());
-        //return (Math.abs(liftLeftEn.getPosition()) > Math.abs(liftLevel.encoderLevel)
-        // || Math.abs(liftRightEn.getPosition()) > Math.abs(liftLevel.encoderLevel));
+
+        if (liftLevel != VerticalLevel.Home) {
+            return (Math.abs(liftLeftEn.getPosition()) > Math.abs(liftLevel.encoderLevel)
+                    || Math.abs(liftRightEn.getPosition()) > Math.abs(liftLevel.encoderLevel));
+        } else {
+            return (Math.abs(liftLeftEn.getPosition()) < 50 || Math.abs(liftRightEn.getPosition()) < 50);
+        }
+
     }
 
 }

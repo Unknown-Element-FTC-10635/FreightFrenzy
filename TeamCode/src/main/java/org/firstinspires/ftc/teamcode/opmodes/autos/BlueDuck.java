@@ -10,8 +10,6 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.commandgroup.DeliverToBottomLevel;
-import org.firstinspires.ftc.teamcode.commandgroup.DeliverToMiddleLevel;
 import org.firstinspires.ftc.teamcode.commandgroup.DeliverToTopLevel;
 import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
@@ -124,6 +122,5 @@ public class BlueDuck extends CommandOpMode {
         telemetry.update();
 
     }
-
 
 }
