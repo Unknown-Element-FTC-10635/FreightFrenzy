@@ -64,14 +64,14 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
      * Extends the lift inwards
      */
     public void in() {
-        extension.set(0.5);
+        extension.set(-0.5);
     }
 
     /**
      * Extends the lift out
      */
     public void out() {
-        extension.set(-0.5);
+        extension.set(0.5);
     }
 
     /**

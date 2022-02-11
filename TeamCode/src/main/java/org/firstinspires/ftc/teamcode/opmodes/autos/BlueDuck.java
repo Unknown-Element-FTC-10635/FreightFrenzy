@@ -56,7 +56,7 @@ public class BlueDuck extends CommandOpMode {
 
         TrajectorySequence toDuck = drive.trajectorySequenceBuilder(start)
                 .lineTo(new Vector2d(-50, 50))
-                .lineTo(new Vector2d(-62, 55))
+                .lineTo(new Vector2d(-61, 55))
                 .build();
 
         TrajectorySequence toHub = drive.trajectorySequenceBuilder(toDuck.end())

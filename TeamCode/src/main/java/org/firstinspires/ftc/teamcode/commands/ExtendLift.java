@@ -33,8 +33,4 @@ public class ExtendLift extends CommandBase {
     public void end(boolean interrupted) {
         liftSubsystem.stop();
     }
-
-    public HorizontalLiftSubsystem getLiftSubsystem() {
-        return liftSubsystem;
-    }
 }
