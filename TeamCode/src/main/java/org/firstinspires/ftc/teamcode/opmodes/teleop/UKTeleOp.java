@@ -45,9 +45,12 @@ public class UKTeleOp extends OpMode {
 
         intake = hardwareMap.get(CRServo.class, "intake");
         tapeOut = hardwareMap.get(CRServo.class, "tapeOut");
+
         tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
+        tapeYaw.setPosition(0.25);
+
         tapePitch = hardwareMap.get(Servo.class, "tapePitch");
-        tapePitch.setPosition(0);
+        tapePitch.setPosition(0.7);
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
@@ -111,8 +114,9 @@ public class UKTeleOp extends OpMode {
         telemetry.addData("Left Lift:", liftLeft.getCurrentPosition());
         telemetry.addData("Right Lift:", liftRight.getCurrentPosition());
         telemetry.addData("Extension:", extension.getCurrentPosition());
-        telemetry.addData("Pitch Servo:", tapePitch.getPosition());
         telemetry.addData("Tape Out:", tapeOutValue);
+        telemetry.addData("Tape Pitch:", tapePitch.getPosition());
+        telemetry.addData("Tape Yaw:", tapeYaw.getPosition());
         telemetry.addData("Cycle Time:", time.milliseconds());
         telemetry.update();
     }
