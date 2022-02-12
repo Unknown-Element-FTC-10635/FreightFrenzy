@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Lift;
@@ -31,6 +32,12 @@ public class BlueDuckWarehouse extends LinearOpMode {
         ducky = hardwareMap.get(DcMotorEx.class, "ducky");
 
         lift = new Lift(hardwareMap, telemetry);
+
+        // Energize the tape servos so they don't move
+        Servo tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
+        tapeYaw.setPosition(0.25);
+        Servo tapePitch = hardwareMap.get(Servo.class, "tapePitch");
+        tapePitch.setPosition(0.7);
 
         bot = new SampleMecanumDrive(hardwareMap);
 

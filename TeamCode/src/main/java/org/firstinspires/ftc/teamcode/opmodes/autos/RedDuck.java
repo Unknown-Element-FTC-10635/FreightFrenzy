@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Lift;
@@ -32,6 +33,12 @@ public class RedDuck extends LinearOpMode {
 
         lift = new Lift(hardwareMap, telemetry);
 
+        // Energize the tape servos so they don't move
+        Servo tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
+        tapeYaw.setPosition(0.25);
+        Servo tapePitch = hardwareMap.get(Servo.class, "tapePitch");
+        tapePitch.setPosition(0.7);
+
         bot = new SampleMecanumDrive(hardwareMap);
 
         Pose2d start = new Pose2d(-36.0, -62, Math.toRadians(90));
@@ -47,7 +54,7 @@ public class RedDuck extends LinearOpMode {
         TrajectorySequence toHub = bot.trajectorySequenceBuilder(toDuck.end())
                 .lineTo(new Vector2d(-60, -35))
                 .lineTo(new Vector2d(-50, -25))
-                .lineTo(new Vector2d(-32, -22))
+                .lineTo(new Vector2d(-32, -24))
                 .build();
 
         TrajectorySequence toSquare = bot.trajectorySequenceBuilder(toHub.end())
