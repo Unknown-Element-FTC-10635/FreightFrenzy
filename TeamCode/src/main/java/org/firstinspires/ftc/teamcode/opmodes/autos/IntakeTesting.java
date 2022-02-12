@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.commandgroup.DeliverToTopLevel;
 import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
+@Disabled
 @Autonomous
 public class IntakeTesting extends CommandOpMode {
     VerticalLiftSubsystem verticalLiftSubsystem;

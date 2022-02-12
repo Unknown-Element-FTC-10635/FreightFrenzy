@@ -6,15 +6,17 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
+import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.commandgroup.DeliverToBottomLevel;
-import org.firstinspires.ftc.teamcode.commandgroup.DeliverToMiddleLevel;
-import org.firstinspires.ftc.teamcode.commandgroup.DeliverToTopLevel;
+import org.firstinspires.ftc.teamcode.commandgroup.PickLevel;
 import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakeCube;
+import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
 import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
@@ -42,12 +44,18 @@ public class BlueDuckWarehouse extends CommandOpMode {
 
         webcam = new Webcam1(hardwareMap);
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        // Energize the tape servos so they don't move
+        Servo tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
+        tapeYaw.setPosition(0.25);
+        Servo tapePitch = hardwareMap.get(Servo.class, "tapePitch");
+        tapePitch.setPosition(0.7);
 
         duck = new DuckWheelSubsystem(hardwareMap);
         horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
         verticalLift = new VerticalLiftSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap);
+
+        drive = new SampleMecanumDrive(hardwareMap);
 
         telemetry.addLine("Creating Paths");
         telemetry.update();
@@ -62,12 +70,12 @@ public class BlueDuckWarehouse extends CommandOpMode {
 
         TrajectorySequence toHub = drive.trajectorySequenceBuilder(toDuck.end())
                 .lineTo(new Vector2d(-63, 40))
-                .lineTo(new Vector2d(-50, 25))
+                .lineTo(new Vector2d(-55, 24))
                 .turn(Math.toRadians(90))
                 .build();
 
         TrajectorySequence approachHub = drive.trajectorySequenceBuilder(toHub.end())
-                .lineTo(new Vector2d(-33, 25))
+                .lineTo(new Vector2d(-33, 24))
                 .build();
 
         TrajectorySequence toWarehouse = drive.trajectorySequenceBuilder(toHub.end())
@@ -82,46 +90,46 @@ public class BlueDuckWarehouse extends CommandOpMode {
 
         webcam.startTeamelementColor();
 
+        telemetry.addLine("Ready to Start");
+        telemetry.update();
+
+        waitForStart();
+
+        elementPosition = webcam.getElementPosition();
+        telemetry.addData("Going to position", elementPosition);
+
         telemetry.addLine("Scheduling Tasks");
         telemetry.update();
 
         schedule(
-            new SequentialCommandGroup(
-                new InstantCommand(() -> webcam.stop()),
-                new FollowTrajectoryCommand(drive, toDuck),
-                new ParallelDeadlineGroup(
-                    new WaitCommand(3000),
-                    new SpinCarousel(duck, true)
-                ),
-                new FollowTrajectoryCommand(drive, toHub),
-                new ParallelCommandGroup(
-                    new FollowTrajectoryCommand(drive, approachHub),
-                    new InstantCommand(() -> {
-                        switch (elementPosition) {
-                            case 0:
-                                new DeliverToBottomLevel(verticalLift, horizontalLift, intake);
-                                break;
-                            case 1:
-                                new DeliverToMiddleLevel(verticalLift, horizontalLift, intake);
-                                break;
-                            case 2:
-                                new DeliverToTopLevel(verticalLift, horizontalLift, intake);
-                                break;
-                        }
-                    })
-                ),
-                new ParallelCommandGroup(
-                        new FollowTrajectoryCommand(drive, toWarehouse),
-                        new ReturnLift(verticalLift, horizontalLift)
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> webcam.stop()),
+                        new ParallelRaceGroup(
+                                new WaitCommand(250),
+                                new IntakeCube(intake)
+                        ),
+                        new FollowTrajectoryCommand(drive, toDuck),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(3000),
+                                new SpinCarousel(duck, true)
+                        ),
+                        new FollowTrajectoryCommand(drive, toHub),
+                        new ParallelCommandGroup(
+                                new FollowTrajectoryCommand(drive, approachHub),
+                                new PickLevel(elementPosition, verticalLift, horizontalLift, intake)
+                        ),
+                        new ParallelRaceGroup(
+                                new WaitCommand(2000),
+                                new OuttakeCube(intake)
+                        ),
+                        new ParallelCommandGroup(
+                                new FollowTrajectoryCommand(drive, toWarehouse),
+                                new ReturnLift(verticalLift, horizontalLift)
+                        )
                 )
-            )
         );
 
         register(verticalLift, horizontalLift, intake, duck);
-
-        telemetry.addLine("Ready to Start");
-        telemetry.update();
-
     }
 
 }

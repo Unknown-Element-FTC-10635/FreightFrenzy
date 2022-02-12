@@ -27,10 +27,6 @@ class DeliverToLevel extends SequentialCommandGroup {
                 new ParallelCommandGroup(
                         new RaiseLift(vertical, vertLevel, 0.5),
                         new ExtendLift(horizontal, horizontalLevel)
-                ),
-                new ParallelRaceGroup(
-                        new WaitCommand(2000),
-                        new OuttakeCube(intake)
                 )
                 //new ReturnLift(vertical, horizontal)
 

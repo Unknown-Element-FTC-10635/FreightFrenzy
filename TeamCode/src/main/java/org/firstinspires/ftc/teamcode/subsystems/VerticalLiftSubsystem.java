@@ -24,7 +24,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
      */
     public enum VerticalLevel {
         Top(1700), // 1500
-        Middle(800), // 800
+        Middle(1000), // 800
         Bottom(200), // 200
         Home(0), // 0
         Ground(-400); // -400
