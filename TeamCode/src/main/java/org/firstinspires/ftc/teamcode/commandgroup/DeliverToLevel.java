@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.commandgroup;
 
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
@@ -18,6 +19,11 @@ import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem.VerticalL
 class DeliverToLevel extends SequentialCommandGroup {
     public DeliverToLevel(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal, IntakeSubsystem intake, VerticalLevel vertLevel, HorizontalLevel horizontalLevel) {
         addCommands(
+                new InstantCommand(() -> {
+                    vertical.reset();
+                    horizontal.reset();
+                }),
+                new ExtendLift(horizontal, HorizontalLevel.PushOut),
                 new ParallelCommandGroup(
                         new RaiseLift(vertical, vertLevel, 0.5),
                         new ExtendLift(horizontal, horizontalLevel)

@@ -19,9 +19,10 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
      * Enum of pre-saved positions
      */
     public enum HorizontalLevel {
-        Top(1100), // 1100
+        Top(1000), // 1100
         Middle(800), // 800
         Bottom(550), // 550
+        PushOut(200), // 200 - Pushes out past the servos
         Home(0); // 0
 
         public int encoderLevel;

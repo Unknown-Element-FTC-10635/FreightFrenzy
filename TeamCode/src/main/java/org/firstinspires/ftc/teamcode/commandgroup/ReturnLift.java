@@ -15,8 +15,8 @@ public class ReturnLift extends ParallelCommandGroup {
         addCommands(
                 new RetractLift(horizontal),
                 new SequentialCommandGroup(
-                        new WaitCommand(1000),
-                        new RaiseLift(vertical, VerticalLiftSubsystem.VerticalLevel.Home, 0.5)
+                        new WaitCommand(200),
+                        new RaiseLift(vertical, VerticalLiftSubsystem.VerticalLevel.Bottom, 0.5)
                 )
 
         );
