@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -8,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.commandgroup.DeliverToTopLevel;
 
 @TeleOp(name = "TeleOp")
 public class UKTeleOp extends OpMode {
@@ -47,16 +50,21 @@ public class UKTeleOp extends OpMode {
         tapeOut = hardwareMap.get(CRServo.class, "tapeOut");
 
         tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
-        tapeYaw.setPosition(0.25);
-
         tapePitch = hardwareMap.get(Servo.class, "tapePitch");
-        tapePitch.setPosition(0.7);
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
         time = new ElapsedTime();
         time.startTime();
+    }
+
+    @Override
+    public void start() {
+        tapeYaw.setPosition(0.25);
+        tapePitch.setPosition(0.5);
+
+        super.start();
     }
 
     @Override
@@ -85,9 +93,9 @@ public class UKTeleOp extends OpMode {
         }
 
         if (gamepad1.dpad_left) {
-            ducky.setPower(-0.55);
+            ducky.setPower(-0.45);
         } else if (gamepad1.dpad_right) {
-            ducky.setPower(0.55);
+            ducky.setPower(0.45);
         } else if (gamepad1.dpad_down) {
             ducky.setPower(0);
         }

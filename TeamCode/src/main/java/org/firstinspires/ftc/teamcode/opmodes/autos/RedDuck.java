@@ -47,9 +47,7 @@ public class RedDuck extends CommandOpMode {
 
         // Energize the tape servos so they don't move
         Servo tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
-        tapeYaw.setPosition(0.25);
         Servo tapePitch = hardwareMap.get(Servo.class, "tapePitch");
-        tapePitch.setPosition(0.7);
 
         duck = new DuckWheelSubsystem(hardwareMap);
         horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
@@ -77,7 +75,7 @@ public class RedDuck extends CommandOpMode {
                 .build();
 
         TrajectorySequence approachHub = drive.trajectorySequenceBuilder(toHub.end())
-                .lineTo(new Vector2d(-32, -24))
+                .lineTo(new Vector2d(-31, -24))
                 .build();
 
         TrajectorySequence toSquare = drive.trajectorySequenceBuilder(approachHub.end())
@@ -97,6 +95,9 @@ public class RedDuck extends CommandOpMode {
         telemetry.update();
 
         waitForStart();
+
+        tapeYaw.setPosition(0.25);
+        tapePitch.setPosition(0.5);
 
         elementPosition = webcam.getElementPosition();
         telemetry.addData("Going to position", elementPosition);

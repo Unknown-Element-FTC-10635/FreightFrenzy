@@ -33,6 +33,8 @@ public class RedWarehouse extends CommandOpMode {
     private VerticalLiftSubsystem verticalLift;
     private IntakeSubsystem intake;
 
+    Servo tapeYaw, tapePitch;
+
     @Override
     public void initialize() {
         telemetry.addLine("Creating Subsystems");
@@ -41,10 +43,8 @@ public class RedWarehouse extends CommandOpMode {
         webcam = new Webcam1(hardwareMap);
 
         // Energize the tape servos so they don't move
-        Servo tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
-        tapeYaw.setPosition(0.25);
-        Servo tapePitch = hardwareMap.get(Servo.class, "tapePitch");
-        tapePitch.setPosition(0.7);
+        tapeYaw = hardwareMap.servo.get("tapeYaw");
+        tapePitch = hardwareMap.servo.get("tapePitch");
 
         horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
         verticalLift = new VerticalLiftSubsystem(hardwareMap, telemetry);
@@ -98,6 +98,9 @@ public class RedWarehouse extends CommandOpMode {
         telemetry.update();
 
         waitForStart();
+
+        tapeYaw.setPosition(0.25);
+        tapePitch.setPosition(0.5);
 
         elementPosition = webcam.getElementPosition();
         telemetry.addData("Going to position", elementPosition);
