@@ -11,12 +11,12 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class TeamElementColorPipeline extends OpenCvPipeline {
-    private final Scalar LOWER_GREEN = new Scalar(30, 50, 50);
+    private final Scalar LOWER_GREEN = new Scalar(25, 50, 50);
     private final Scalar UPPER_GREEN = new Scalar(100, 255, 255);
 
-    private final Rect LEFTBARCODE = new Rect(0, 24, 426, 690);
-    private final Rect CENTERBARCODE = new Rect(426, 24, 426, 690);
-    private final Rect RIGHTBARCODE = new Rect(852,  24, 426, 690);
+    private final Rect LEFTBARCODE = new Rect(0, 24, 266, 400);
+    private final Rect CENTERBARCODE = new Rect(266, 24, 266, 400);
+    private final Rect RIGHTBARCODE = new Rect(532,  24, 266, 400);
 
     private int elementPosition = 0;
 
