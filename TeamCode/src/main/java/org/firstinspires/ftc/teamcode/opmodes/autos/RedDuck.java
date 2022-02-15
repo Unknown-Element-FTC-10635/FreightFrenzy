@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
 
-@Autonomous
+@Autonomous(group = "Red")
 public class RedDuck extends CommandOpMode {
     private Webcam1 webcam;
     private int elementPosition = -1;

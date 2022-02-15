@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem.VerticalLevel;
 
 class DeliverToLevel extends SequentialCommandGroup {
-    public DeliverToLevel(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal, IntakeSubsystem intake, VerticalLevel vertLevel, HorizontalLevel horizontalLevel) {
+    public DeliverToLevel(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal, VerticalLevel vertLevel, HorizontalLevel horizontalLevel) {
         addCommands(
                 new InstantCommand(() -> {
                     vertical.reset();
@@ -31,6 +31,6 @@ class DeliverToLevel extends SequentialCommandGroup {
                 //new ReturnLift(vertical, horizontal)
 
         );
-        addRequirements(vertical, horizontal, intake);
+        addRequirements(vertical, horizontal);
     }
 }

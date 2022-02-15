@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem.VerticalLevel;
 
 public class DeliverToTopLevel extends DeliverToLevel {
-    public DeliverToTopLevel(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal, IntakeSubsystem intake) {
-        super(vertical, horizontal, intake, VerticalLevel.Top, HorizontalLevel.Top);
+    public DeliverToTopLevel(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal) {
+        super(vertical, horizontal, VerticalLevel.Top, HorizontalLevel.Top);
     }
 }

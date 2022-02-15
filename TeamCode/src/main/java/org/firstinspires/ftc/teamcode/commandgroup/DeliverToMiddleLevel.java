@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem.VerticalLevel;
 
 public class DeliverToMiddleLevel extends DeliverToLevel {
-    public DeliverToMiddleLevel(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal, IntakeSubsystem intake) {
-        super(vertical, horizontal, intake, VerticalLevel.Middle, HorizontalLevel.Middle);
+    public DeliverToMiddleLevel(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal) {
+        super(vertical, horizontal, VerticalLevel.Middle, HorizontalLevel.Middle);
     }
 }

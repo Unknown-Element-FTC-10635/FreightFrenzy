@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
-@Autonomous
+@Autonomous(group = "Blue")
 public class BlueDuckWarehouse extends CommandOpMode {
     private Webcam1 webcam;
     private int elementPosition = 2;

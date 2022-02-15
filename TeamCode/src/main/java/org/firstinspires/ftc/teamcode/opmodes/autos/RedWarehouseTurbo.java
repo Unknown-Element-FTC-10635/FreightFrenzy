@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
-@Autonomous
-public class RedWarehouse extends CommandOpMode {
+@Autonomous(group = "Red")
+public class RedWarehouseTurbo extends CommandOpMode {
     private Webcam1 webcam;
     private int elementPosition = -1;
 
