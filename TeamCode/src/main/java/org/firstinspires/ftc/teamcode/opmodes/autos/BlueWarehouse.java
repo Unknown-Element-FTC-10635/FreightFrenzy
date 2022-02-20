@@ -5,26 +5,28 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.ParallelDeadlineGroup;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.commandgroup.CycleWarehouse;
 import org.firstinspires.ftc.teamcode.commandgroup.PickLevel;
+import org.firstinspires.ftc.teamcode.commandgroup.Reset;
 import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.util.Webcam1;
 
+@Disabled
 @Autonomous(group = "Blue")
 public class BlueWarehouse extends CommandOpMode {
     private Webcam1 webcam;
@@ -39,8 +41,6 @@ public class BlueWarehouse extends CommandOpMode {
     public void initialize() {
         telemetry.addLine("Creating Subsystems");
         telemetry.update();
-
-        webcam = new Webcam1(hardwareMap);
 
         // Energize the tape servos so they don't move
         Servo tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
@@ -59,7 +59,7 @@ public class BlueWarehouse extends CommandOpMode {
         drive.setPoseEstimate(start);
 
         TrajectorySequence initialToHub = drive.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(2, 36), Math.toRadians(220))
+                .splineTo(new Vector2d(3, 39), Math.toRadians(230))
                 .build();
 
         TrajectorySequence finalToWarehouse = drive.trajectorySequenceBuilder(initialToHub.end())
@@ -72,7 +72,10 @@ public class BlueWarehouse extends CommandOpMode {
         telemetry.addLine("Starting Webcam");
         telemetry.update();
 
+        webcam = new Webcam1(hardwareMap);
         webcam.startTeamelementColor();
+
+
 
         telemetry.addLine("Ready to Start");
         telemetry.update();
@@ -83,34 +86,37 @@ public class BlueWarehouse extends CommandOpMode {
         tapePitch.setPosition(0.7);
 
         elementPosition = webcam.getElementPosition();
-        telemetry.addData("Going to position", elementPosition);
 
         telemetry.addLine("Scheduling Tasks");
         telemetry.update();
 
         schedule(
                 new SequentialCommandGroup(
-                    new InstantCommand(() -> webcam.stop()),
-                    new ParallelRaceGroup(
-                        new WaitCommand(250),
-                        new IntakeCube(intake)
-                    ),
-                    new ParallelCommandGroup(
-                        new FollowTrajectoryCommand(drive, initialToHub),
-                        new PickLevel(elementPosition, verticalLift, horizontalLift, intake)
-                    ),
-                    new ParallelRaceGroup(
-                        new WaitCommand(1500),
-                        new OuttakeCube(intake)
-                    ),
-                    new CycleWarehouse(drive, verticalLift, horizontalLift, intake, initialToHub.end(), false),
-                    new ParallelCommandGroup(
-                        new FollowTrajectoryCommand(drive, finalToWarehouse),
-                        new ReturnLift(verticalLift, horizontalLift)
-                    )
+                        new InstantCommand(() -> webcam.stop()),
+                        new Reset(verticalLift, horizontalLift),
+                        new ParallelRaceGroup(
+                                new WaitCommand(250),
+                                new IntakeCube(intake)
+                        ),
+                        new ParallelCommandGroup(
+                                new FollowTrajectoryCommand(drive, initialToHub),
+                                new PickLevel(elementPosition, verticalLift, horizontalLift, intake)
+                        ),
+                        new ParallelRaceGroup(
+                                new WaitCommand(2000),
+                                new OuttakeCube(intake)
+                        ),
+                        new CycleWarehouse(drive, verticalLift, horizontalLift, intake, initialToHub.end(), false),
+                        new CycleWarehouse(drive, verticalLift, horizontalLift, intake, initialToHub.end(), false)
+                        //new ParallelCommandGroup(
+                        //        new FollowTrajectoryCommand(drive, finalToWarehouse),
+                        //        new ReturnLift(verticalLift, horizontalLift)
+                       // )
                 )
         );
 
         register(verticalLift, horizontalLift, intake);
+
+        telemetry.addData("Going to position", elementPosition);
     }
 }

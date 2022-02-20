@@ -11,13 +11,13 @@ public class PickLevel extends SequentialCommandGroup {
     public PickLevel(int level, VerticalLiftSubsystem verticalLift, HorizontalLiftSubsystem horizontalLift, IntakeSubsystem intake) {
         switch (level) {
             case 0:
-                addCommands(new DeliverToBottomLevel(verticalLift, horizontalLift, intake));
+                addCommands(new DeliverToBottomLevel(verticalLift, horizontalLift));
                 break;
             case 1:
-                addCommands(new DeliverToMiddleLevel(verticalLift, horizontalLift, intake));
+                addCommands(new DeliverToMiddleLevel(verticalLift, horizontalLift));
                 break;
             case 2:
-                addCommands(new DeliverToTopLevel(verticalLift, horizontalLift, intake));
+                addCommands(new DeliverToTopLevel(verticalLift, horizontalLift));
                 break;
         }
     }

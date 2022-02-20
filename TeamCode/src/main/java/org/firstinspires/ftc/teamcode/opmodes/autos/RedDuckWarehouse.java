@@ -17,10 +17,11 @@ import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
+import org.firstinspires.ftc.teamcode.commandgroup.Reset;
 import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.Webcam1;
+import org.firstinspires.ftc.teamcode.util.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
@@ -29,7 +30,7 @@ import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 @Autonomous(group = "Red")
 public class RedDuckWarehouse extends CommandOpMode {
     private Webcam1 webcam;
-    private int elementPosition = -1;
+    private int elementPosition = 2;
 
     private SampleMecanumDrive drive;
     private DuckWheelSubsystem duck;
@@ -65,7 +66,10 @@ public class RedDuckWarehouse extends CommandOpMode {
                 .setReversed(true)
                 .lineTo(new Vector2d(-38, -50))
                 .setReversed(false)
-                .lineToLinearHeading(new Pose2d(-60, -55, 0))
+                .turn(-Math.toRadians(90))
+                .back(5)
+                .lineToLinearHeading(new Pose2d(-60, -56, 0))
+                .waitSeconds(1)
                 .build();
 
         TrajectorySequence toHub = drive.trajectorySequenceBuilder(toDuck.end())
@@ -107,6 +111,7 @@ public class RedDuckWarehouse extends CommandOpMode {
         schedule(
             new SequentialCommandGroup(
                 new InstantCommand(() -> webcam.stop()),
+                new Reset(verticalLift, horizontalLift),
                 new ParallelRaceGroup(
                         new WaitCommand(250),
                         new IntakeCube(intake)

@@ -31,7 +31,7 @@ public class IntakeTesting extends CommandOpMode {
 
         schedule(
             new SequentialCommandGroup(
-                new DeliverToTopLevel(verticalLiftSubsystem, horizontalLiftSubsystem, intake),
+                new DeliverToTopLevel(verticalLiftSubsystem, horizontalLiftSubsystem),
                 new ParallelRaceGroup(
                     new WaitCommand(2000),
                     new OuttakeCube(intake)

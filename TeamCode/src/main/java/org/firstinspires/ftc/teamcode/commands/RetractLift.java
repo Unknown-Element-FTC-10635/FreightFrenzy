@@ -8,14 +8,18 @@ import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem.Horizon
 public class RetractLift extends CommandBase {
     private final HorizontalLiftSubsystem liftSubsystem;
 
-    public RetractLift(HorizontalLiftSubsystem subsystem) {
+    private HorizontalLevel level;
+
+    public RetractLift(HorizontalLiftSubsystem subsystem, HorizontalLevel level) {
         liftSubsystem = subsystem;
         addRequirements(liftSubsystem);
+
+        this.level = level;
     }
 
     @Override
     public void initialize() {
-        liftSubsystem.extendToPosition(HorizontalLevel.Home);
+        liftSubsystem.extendToPosition(level);
         liftSubsystem.out();
     }
 

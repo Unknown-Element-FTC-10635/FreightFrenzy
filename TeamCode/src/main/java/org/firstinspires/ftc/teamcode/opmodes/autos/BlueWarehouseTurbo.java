@@ -16,17 +16,18 @@ import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
+import org.firstinspires.ftc.teamcode.commandgroup.Reset;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.Webcam1;
+import org.firstinspires.ftc.teamcode.util.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
-@Autonomous(group = "Blue")
+@Autonomous(group = "Blue", name = "Blue Warehouse")
 public class BlueWarehouseTurbo extends CommandOpMode {
     private Webcam1 webcam;
-    private int elementPosition = -1;
+    private int elementPosition = 2;
 
     private SampleMecanumDrive drive;
     private HorizontalLiftSubsystem horizontalLift;
@@ -57,7 +58,7 @@ public class BlueWarehouseTurbo extends CommandOpMode {
         drive.setPoseEstimate(start);
 
         TrajectorySequence initialToHub = drive.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(2, 36), Math.toRadians(220))
+                .splineTo(new Vector2d(3, 39), Math.toRadians(230))
                 .build();
 
         TrajectorySequence finalToWarehouse = drive.trajectorySequenceBuilder(initialToHub.end())
@@ -89,6 +90,7 @@ public class BlueWarehouseTurbo extends CommandOpMode {
         schedule(
             new SequentialCommandGroup(
                 new InstantCommand(() -> webcam.stop()),
+                new Reset(verticalLift, horizontalLift),
                 new ParallelRaceGroup(
                         new WaitCommand(250),
                         new IntakeCube(intake)

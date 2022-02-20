@@ -19,8 +19,9 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
      * Enum of pre-saved positions
      */
     public enum HorizontalLevel {
-        Top(1000), // 1100
-        Middle(800), // 800
+        Top(1200), // 1100
+        Middle(950), // 800
+        Ground(1000),
         Bottom(550), // 550
         PushOut(200), // 200 - Pushes out past the servos
         Home(0); // 0
@@ -105,10 +106,10 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
 
         //return extension.atTargetPosition();
 
-        if (horizontalLevel != HorizontalLevel.Home) {
+        if (horizontalLevel != HorizontalLevel.Home && horizontalLevel != HorizontalLevel.Ground) {
             return (Math.abs(extension.getCurrentPosition()) > Math.abs(horizontalLevel.encoderLevel));
         } else {
-            return (Math.abs(extension.getCurrentPosition()) < 50);
+            return (Math.abs(extension.getCurrentPosition()) < horizontalLevel.encoderLevel);
         }
     }
 }

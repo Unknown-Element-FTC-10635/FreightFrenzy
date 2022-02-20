@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 public class ReturnLift extends ParallelCommandGroup {
     public ReturnLift(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal) {
         addCommands(
-                new RetractLift(horizontal)
+                new RetractLift(horizontal, HorizontalLiftSubsystem.HorizontalLevel.Home)
                 /*
                 new SequentialCommandGroup(
                         new WaitCommand(200),

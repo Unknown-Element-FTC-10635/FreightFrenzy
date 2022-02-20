@@ -17,10 +17,11 @@ import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
+import org.firstinspires.ftc.teamcode.commandgroup.Reset;
 import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.Webcam1;
+import org.firstinspires.ftc.teamcode.util.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
@@ -30,7 +31,7 @@ import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 @Autonomous(group = "Blue")
 public class BlueDuck extends CommandOpMode {
     private Webcam1 webcam;
-    private int elementPosition = -1;
+    private int elementPosition = 2;
 
     private SampleMecanumDrive drive;
     private DuckWheelSubsystem duck;
@@ -65,6 +66,7 @@ public class BlueDuck extends CommandOpMode {
         TrajectorySequence toDuck = drive.trajectorySequenceBuilder(start)
                 .lineTo(new Vector2d(-50, 50))
                 .lineTo(new Vector2d(-62, 55))
+                .waitSeconds(1)
                 .build();
 
         TrajectorySequence toHub = drive.trajectorySequenceBuilder(toDuck.end())
@@ -74,7 +76,7 @@ public class BlueDuck extends CommandOpMode {
                 .build();
 
         TrajectorySequence approachHub = drive.trajectorySequenceBuilder(toHub.end())
-                .lineTo(new Vector2d(-33, 24))
+                .lineTo(new Vector2d(-32, 24))
                 .build();
 
         TrajectorySequence toSquare = drive.trajectorySequenceBuilder(toHub.end())
@@ -103,6 +105,7 @@ public class BlueDuck extends CommandOpMode {
         schedule(
             new SequentialCommandGroup(
                 new InstantCommand(() -> webcam.stop()),
+                new Reset(verticalLift, horizontalLift),
                 new ParallelRaceGroup(
                   new WaitCommand(250),
                   new IntakeCube(intake)

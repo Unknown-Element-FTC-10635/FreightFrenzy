@@ -16,17 +16,18 @@ import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
+import org.firstinspires.ftc.teamcode.commandgroup.Reset;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.robot.Webcam1;
+import org.firstinspires.ftc.teamcode.util.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
-@Autonomous(group = "Red")
+@Autonomous(group = "Red", name = "Red Warehouse")
 public class RedWarehouseTurbo extends CommandOpMode {
     private Webcam1 webcam;
-    private int elementPosition = -1;
+    private int elementPosition = 2;
 
     private SampleMecanumDrive drive;
     private HorizontalLiftSubsystem horizontalLift;
@@ -59,28 +60,9 @@ public class RedWarehouseTurbo extends CommandOpMode {
         drive.setPoseEstimate(start);
 
         TrajectorySequence initialToHub = drive.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(2, -38), Math.toRadians(140))
+                .splineTo(new Vector2d(2, -38), Math.toRadians(135))
+                .waitSeconds(1)
                 .build();
-
-        /*
-        TrajectorySequence toWarehouse = drive.trajectorySequenceBuilder(initialToHub.end())
-                .setReversed(true)
-                .lineToLinearHeading(new Pose2d(10, -67, 0))
-                .build();
-
-        TrajectorySequence throughGap = drive.trajectorySequenceBuilder(toWarehouse.end())
-                .lineTo(new Vector2d(45, -67))
-                .waitSeconds(1.5)
-                .build();
-
-        TrajectorySequence returnToHub = drive.trajectorySequenceBuilder(throughGap.end())
-                .setReversed(true)
-                .lineTo(new Vector2d(0, -67))
-                .lineTo(new Vector2d(-12, -65))
-                .setReversed(false)
-                .turn(Math.toRadians(90))
-                .forward(17)
-                .build(); */
 
         TrajectorySequence finalToWarehouse = drive.trajectorySequenceBuilder(initialToHub.end())
                 .setReversed(true)
@@ -111,6 +93,7 @@ public class RedWarehouseTurbo extends CommandOpMode {
         schedule(
                 new SequentialCommandGroup(
                         new InstantCommand(() -> webcam.stop()),
+                        new Reset(verticalLift, horizontalLift),
                         new ParallelRaceGroup(
                                 new WaitCommand(250),
                                 new IntakeCube(intake)

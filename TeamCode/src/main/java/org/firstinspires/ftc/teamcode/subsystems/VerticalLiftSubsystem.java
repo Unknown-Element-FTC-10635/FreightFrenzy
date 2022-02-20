@@ -23,11 +23,12 @@ public class VerticalLiftSubsystem extends SubsystemBase {
      * Enum of pre-saved position
      */
     public enum VerticalLevel {
+        CycleTop(1900),
         Top(1700), // 1500
         Middle(1000), // 800
         Bottom(200), // 200
         Home(0), // 0
-        Ground(-400); // -400
+        Ground(-1850); // -100 + TOP force to be at the correct position
 
         public int encoderLevel;
 
@@ -62,7 +63,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
         telemetry.addData("Vertical Lift Level:", liftLevel);
         telemetry.addData("Left Lift", liftLeftEn.getPosition());
         telemetry.addData("Right Lift", liftRightEn.getPosition());
-        telemetry.update();
+        //telemetry.update();
     }
 
     /**
@@ -87,6 +88,11 @@ public class VerticalLiftSubsystem extends SubsystemBase {
 
         targetFloor = level.encoderLevel - level.encoderLevel * 0.05;
         targetCeiling = level.encoderLevel + level.encoderLevel * 0.05;
+    }
+
+    public void liftToPosition(int encoderValue) {
+        liftLeft.setTargetPosition(encoderValue);
+        liftRight.setTargetPosition(encoderValue);
     }
 
     /**
@@ -127,7 +133,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
             return (Math.abs(liftLeftEn.getPosition()) > Math.abs(liftLevel.encoderLevel)
                     || Math.abs(liftRightEn.getPosition()) > Math.abs(liftLevel.encoderLevel));
         } else {
-            return (Math.abs(liftLeftEn.getPosition()) < 50 || Math.abs(liftRightEn.getPosition()) < 50);
+            return (liftLeftEn.getPosition() > 200  || liftRightEn.getPosition() > 200);
         }
 
     }

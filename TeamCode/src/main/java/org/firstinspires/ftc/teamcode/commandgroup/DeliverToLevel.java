@@ -19,14 +19,13 @@ import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem.VerticalL
 class DeliverToLevel extends SequentialCommandGroup {
     public DeliverToLevel(VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal, VerticalLevel vertLevel, HorizontalLevel horizontalLevel) {
         addCommands(
-                new InstantCommand(() -> {
-                    vertical.reset();
-                    horizontal.reset();
-                }),
                 new ExtendLift(horizontal, HorizontalLevel.PushOut),
                 new ParallelCommandGroup(
-                        new RaiseLift(vertical, vertLevel, 0.5),
-                        new ExtendLift(horizontal, horizontalLevel)
+                        new RaiseLift(vertical, vertLevel, 0.4),
+                        new SequentialCommandGroup(
+                                new WaitCommand(300),
+                                new ExtendLift(horizontal, horizontalLevel)
+                        )
                 )
                 //new ReturnLift(vertical, horizontal)
 
