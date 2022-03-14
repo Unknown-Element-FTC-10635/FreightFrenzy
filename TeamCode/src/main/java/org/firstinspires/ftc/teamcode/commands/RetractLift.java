@@ -4,28 +4,27 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem.HorizontalLevel;
+import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 
 public class RetractLift extends CommandBase {
     private final HorizontalLiftSubsystem liftSubsystem;
+    private final LimitSwitchSubsystem topLimit;
 
-    private HorizontalLevel level;
-
-    public RetractLift(HorizontalLiftSubsystem subsystem, HorizontalLevel level) {
-        liftSubsystem = subsystem;
-        addRequirements(liftSubsystem);
-
-        this.level = level;
+    public RetractLift(HorizontalLiftSubsystem liftSubsystem, LimitSwitchSubsystem topLimit) {
+        this.liftSubsystem = liftSubsystem;
+        this.topLimit = topLimit;
+        addRequirements(this.liftSubsystem, this.topLimit);
     }
 
     @Override
     public void initialize() {
-        liftSubsystem.extendToPosition(level);
+        liftSubsystem.extendToPosition(HorizontalLevel.Home);
         liftSubsystem.out();
     }
 
     @Override
     public boolean isFinished() {
-        return liftSubsystem.atTargetPosition();
+        return topLimit.isPressed();
     }
 
     @Override

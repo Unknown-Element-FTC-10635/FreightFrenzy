@@ -17,18 +17,16 @@ public class VerticalLiftSubsystem extends SubsystemBase {
 
     private VerticalLevel liftLevel = VerticalLevel.Home;
 
-    private double targetFloor, targetCeiling;
-
     /**
      * Enum of pre-saved position
      */
     public enum VerticalLevel {
         CycleTop(1900),
-        Top(1700), // 1500
-        Middle(1000), // 800
+        Top(1800), // 1500
+        Middle(950), // 800
         Bottom(200), // 200
         Home(0), // 0
-        Ground(-1850); // -100 + TOP force to be at the correct position
+        Ground(-100); // -100 + TOP force to be at the correct position
 
         public int encoderLevel;
 
@@ -39,12 +37,14 @@ public class VerticalLiftSubsystem extends SubsystemBase {
 
     public VerticalLiftSubsystem(HardwareMap hardwareMap, Telemetry telemetry) {
         liftLeft = new MotorEx(hardwareMap, "liftLeft", Motor.GoBILDA.RPM_312);
+        liftLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         liftLeft.setRunMode(Motor.RunMode.PositionControl);
 
         liftLeftEn = liftLeft.encoder;
         liftLeftEn.reset();
 
         liftRight = new MotorEx(hardwareMap, "liftRight", Motor.GoBILDA.RPM_312);
+        liftRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         liftRight.setRunMode(Motor.RunMode.PositionControl);
         liftRight.setInverted(true);
 
@@ -85,9 +85,6 @@ public class VerticalLiftSubsystem extends SubsystemBase {
         liftLeft.setTargetPosition(level.encoderLevel);
         liftRight.setTargetPosition(level.encoderLevel);
         liftLevel = level;
-
-        targetFloor = level.encoderLevel - level.encoderLevel * 0.05;
-        targetCeiling = level.encoderLevel + level.encoderLevel * 0.05;
     }
 
     public void liftToPosition(int encoderValue) {
@@ -138,4 +135,8 @@ public class VerticalLiftSubsystem extends SubsystemBase {
 
     }
 
+    public void releaseBrakes() {
+        liftLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        liftRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+    }
 }

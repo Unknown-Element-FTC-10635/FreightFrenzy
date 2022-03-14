@@ -13,19 +13,20 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.commandgroup.PickLevel;
-import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
+import org.firstinspires.ftc.teamcode.commandgroup.Reset;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
-import org.firstinspires.ftc.teamcode.commandgroup.Reset;
-import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
+import org.firstinspires.ftc.teamcode.commands.RetractLift;
+import org.firstinspires.ftc.teamcode.commands.SpinCarouselAuto;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.util.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.util.Webcam1;
 
 
 @Autonomous(group = "Red")
@@ -38,6 +39,7 @@ public class RedDuck extends CommandOpMode {
     private HorizontalLiftSubsystem horizontalLift;
     private VerticalLiftSubsystem verticalLift;
     private IntakeSubsystem intake;
+    private LimitSwitchSubsystem topLimit;
 
     @Override
     public void initialize() {
@@ -54,6 +56,7 @@ public class RedDuck extends CommandOpMode {
         horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
         verticalLift = new VerticalLiftSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap);
+        topLimit = new LimitSwitchSubsystem(hardwareMap, "topLimit");
 
         drive = new SampleMecanumDrive(hardwareMap);
 
@@ -69,7 +72,7 @@ public class RedDuck extends CommandOpMode {
                 .setReversed(false)
                 .turn(-Math.toRadians(90))
                 .back(5)
-                .lineToLinearHeading(new Pose2d(-60, -56, 0))
+                .lineToLinearHeading(new Pose2d(-58, -55, 0))
                 .waitSeconds(1)
                 .build();
 
@@ -85,6 +88,7 @@ public class RedDuck extends CommandOpMode {
         TrajectorySequence toSquare = drive.trajectorySequenceBuilder(approachHub.end())
                 .lineTo(new Vector2d(-45, -22))
                 .lineTo(new Vector2d(-61, -34))
+                .strafeRight(3)
                 .build();
 
         telemetry.addLine("Starting Webcam");
@@ -115,15 +119,19 @@ public class RedDuck extends CommandOpMode {
                                 new WaitCommand(250),
                                 new IntakeCube(intake)
                         ),
+                        new InstantCommand(() -> intake.in(0.2)),
                         new FollowTrajectoryCommand(drive, toDuck),
                         new ParallelDeadlineGroup(
-                                new WaitCommand(3000),
-                                new SpinCarousel(duck, false)
+                                new WaitCommand(4000),
+                                new SpinCarouselAuto(duck, false)
                         ),
                         new FollowTrajectoryCommand(drive, toHub),
                         new ParallelCommandGroup(
-                                new FollowTrajectoryCommand(drive, approachHub),
-                                new PickLevel(elementPosition, verticalLift, horizontalLift, intake)
+                                new PickLevel(elementPosition, verticalLift, horizontalLift, intake),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(500),
+                                        new FollowTrajectoryCommand(drive, approachHub)
+                                )
                         ),
                         new ParallelRaceGroup(
                                 new WaitCommand(2000),
@@ -131,7 +139,7 @@ public class RedDuck extends CommandOpMode {
                         ),
                         new ParallelCommandGroup(
                                 new FollowTrajectoryCommand(drive, toSquare),
-                                new ReturnLift(verticalLift, horizontalLift)
+                                new RetractLift(horizontalLift, topLimit)
                         )
                 )
         );

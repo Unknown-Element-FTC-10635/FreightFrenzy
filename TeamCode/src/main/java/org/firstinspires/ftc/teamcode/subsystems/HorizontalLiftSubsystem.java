@@ -13,17 +13,15 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
 
     private Telemetry telemetry;
 
-    private double targetFloor, targetCeiling;
-
     /**
      * Enum of pre-saved positions
      */
     public enum HorizontalLevel {
         Top(1200), // 1100
-        Middle(950), // 800
-        Ground(1000),
-        Bottom(550), // 550
+        Middle(900), // 800
+        Bottom(650), // 550,
         PushOut(200), // 200 - Pushes out past the servos
+        Ground(1300),
         Home(0); // 0
 
         public int encoderLevel;
@@ -57,23 +55,20 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
     public void extendToPosition(HorizontalLevel position) {
         extension.setTargetPosition(position.encoderLevel);
         horizontalLevel = position;
-
-        targetFloor = position.encoderLevel - position.encoderLevel * 0.05;
-        targetCeiling = position.encoderLevel + position.encoderLevel * 0.05;
     }
 
     /**
      * Extends the lift inwards
      */
     public void in() {
-        extension.set(-0.5);
+        extension.set(-0.4);
     }
 
     /**
      * Extends the lift out
      */
     public void out() {
-        extension.set(0.5);
+        extension.set(0.4);
     }
 
     /**
@@ -106,7 +101,7 @@ public class HorizontalLiftSubsystem extends SubsystemBase {
 
         //return extension.atTargetPosition();
 
-        if (horizontalLevel != HorizontalLevel.Home && horizontalLevel != HorizontalLevel.Ground) {
+        if (horizontalLevel != HorizontalLevel.Home) {
             return (Math.abs(extension.getCurrentPosition()) > Math.abs(horizontalLevel.encoderLevel));
         } else {
             return (Math.abs(extension.getCurrentPosition()) < horizontalLevel.encoderLevel);

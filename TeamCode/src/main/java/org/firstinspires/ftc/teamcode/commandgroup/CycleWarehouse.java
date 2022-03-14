@@ -18,13 +18,14 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
 public class CycleWarehouse extends SequentialCommandGroup {
     private static int cycles = 0;
 
     public CycleWarehouse(SampleMecanumDrive drive, VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal,
-                                IntakeSubsystem intake, Pose2d start, boolean red) {
+                          IntakeSubsystem intake, LimitSwitchSubsystem topSwitch, Pose2d start, boolean red) {
         cycles++;
         int direction = 1;
         if (red) {
@@ -51,22 +52,15 @@ public class CycleWarehouse extends SequentialCommandGroup {
                 .build();
 
         addCommands(
-                new ParallelCommandGroup(
-                        new FollowTrajectoryCommand(drive, toWarehouse),
-                        new SequentialCommandGroup(
-                                new WaitCommand(100),
-                                new RaiseLift(vertical, VerticalLiftSubsystem.VerticalLevel.Top, 0.5)
-                        )
+                new FollowTrajectoryCommand(drive, toWarehouse),
+                new ToGround(vertical, horizontal, topSwitch),
+                new ParallelRaceGroup(
+                        new IntakeCube(intake),
+                        new FollowTrajectoryCommand(drive, throughGap)
                 ),
-                new ToGround(vertical, horizontal),
-                new InstantCommand(intake::in),
-                new FollowTrajectoryCommand(drive, throughGap),
                 new ParallelCommandGroup(
                         new FollowTrajectoryCommand(drive, toHub),
-                        new ParallelCommandGroup(
-                            new RaiseLift(vertical, VerticalLiftSubsystem.VerticalLevel.Home, 0.5),
-                            new ExtendLift(horizontal, HorizontalLiftSubsystem.HorizontalLevel.Top)
-                        )
+                        new RaiseLift(vertical, VerticalLiftSubsystem.VerticalLevel.CycleTop, 0.5)
                 ),
                 new ParallelRaceGroup(
                         new WaitCommand(1500),

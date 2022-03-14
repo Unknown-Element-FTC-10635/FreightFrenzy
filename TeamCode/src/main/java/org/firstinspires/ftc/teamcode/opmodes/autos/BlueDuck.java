@@ -13,19 +13,20 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.commandgroup.PickLevel;
-import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
+import org.firstinspires.ftc.teamcode.commandgroup.Reset;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
-import org.firstinspires.ftc.teamcode.commandgroup.Reset;
-import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
+import org.firstinspires.ftc.teamcode.commands.RetractLift;
+import org.firstinspires.ftc.teamcode.commands.SpinCarouselAuto;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.util.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.util.Webcam1;
 
 
 @Autonomous(group = "Blue")
@@ -38,6 +39,7 @@ public class BlueDuck extends CommandOpMode {
     private HorizontalLiftSubsystem horizontalLift;
     private VerticalLiftSubsystem verticalLift;
     private IntakeSubsystem intake;
+    private LimitSwitchSubsystem topLimit;
 
     @Override
     public void initialize() {
@@ -54,6 +56,7 @@ public class BlueDuck extends CommandOpMode {
         horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
         verticalLift = new VerticalLiftSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap);
+        topLimit = new LimitSwitchSubsystem(hardwareMap, "topLimit");
 
         drive = new SampleMecanumDrive(hardwareMap);
 
@@ -65,7 +68,7 @@ public class BlueDuck extends CommandOpMode {
 
         TrajectorySequence toDuck = drive.trajectorySequenceBuilder(start)
                 .lineTo(new Vector2d(-50, 50))
-                .lineTo(new Vector2d(-62, 55))
+                .lineTo(new Vector2d(-59.5, 55))
                 .waitSeconds(1)
                 .build();
 
@@ -80,7 +83,8 @@ public class BlueDuck extends CommandOpMode {
                 .build();
 
         TrajectorySequence toSquare = drive.trajectorySequenceBuilder(toHub.end())
-                .lineTo(new Vector2d(-59, 39))
+                .back(5)
+                .lineTo(new Vector2d(-61, 39))
                 .build();
 
         telemetry.addLine("Starting Webcam");
@@ -103,32 +107,36 @@ public class BlueDuck extends CommandOpMode {
         telemetry.update();
 
         schedule(
-            new SequentialCommandGroup(
-                new InstantCommand(() -> webcam.stop()),
-                new Reset(verticalLift, horizontalLift),
-                new ParallelRaceGroup(
-                  new WaitCommand(250),
-                  new IntakeCube(intake)
-                ),
-                new FollowTrajectoryCommand(drive, toDuck),
-                new ParallelDeadlineGroup(
-                    new WaitCommand(3000),
-                    new SpinCarousel(duck, true)
-                ),
-                new FollowTrajectoryCommand(drive, toHub),
-                new ParallelCommandGroup(
-                    new FollowTrajectoryCommand(drive, approachHub),
-                    new PickLevel(elementPosition, verticalLift, horizontalLift, intake)
-                ),
-                new ParallelRaceGroup(
-                        new WaitCommand(2000),
-                        new OuttakeCube(intake)
-                ),
-                new ParallelCommandGroup(
-                    new FollowTrajectoryCommand(drive, toSquare),
-                    new ReturnLift(verticalLift, horizontalLift)
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> webcam.stop()),
+                        new Reset(verticalLift, horizontalLift),
+                        new ParallelRaceGroup(
+                                new WaitCommand(250),
+                                new IntakeCube(intake)
+                        ),
+                        new InstantCommand(() -> intake.in(0.2)),
+                        new FollowTrajectoryCommand(drive, toDuck),
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(4000),
+                                new SpinCarouselAuto(duck, true)
+                        ),
+                        new FollowTrajectoryCommand(drive, toHub),
+                        new ParallelCommandGroup(
+                                new PickLevel(elementPosition, verticalLift, horizontalLift, intake),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(500),
+                                        new FollowTrajectoryCommand(drive, approachHub)
+                                )
+                        ),
+                        new ParallelRaceGroup(
+                                new WaitCommand(2000),
+                                new OuttakeCube(intake)
+                        ),
+                        new ParallelCommandGroup(
+                                new RetractLift(horizontalLift, topLimit),
+                                new FollowTrajectoryCommand(drive, toSquare)
+                        )
                 )
-            )
         );
 
         register(verticalLift, horizontalLift, intake, duck);

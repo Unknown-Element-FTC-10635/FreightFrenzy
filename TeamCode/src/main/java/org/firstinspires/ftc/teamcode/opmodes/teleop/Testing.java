@@ -1,30 +1,39 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.util.Webcam1;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 
-@Disabled
 @TeleOp
 public class Testing extends LinearOpMode {
-    private DcMotorEx ducky;
+    IntakeSubsystem intake;
+    LimitSwitchSubsystem liftLimit, topLimit;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        ducky = hardwareMap.get(DcMotorEx.class, "ducky");
-
-        Webcam1 webcam = new Webcam1(hardwareMap);
-        webcam.startDuckDectionPipeline();
+        intake = new IntakeSubsystem(hardwareMap);
+        topLimit = new LimitSwitchSubsystem(hardwareMap, "topLimit");
+        liftLimit = new LimitSwitchSubsystem(hardwareMap, "liftLimit");
 
         waitForStart();
 
+        intake.in();
+
         while (opModeIsActive()) {
-            if (gamepad1.cross) {
-                ducky.setPower(0.2);
-            }
+            int[] rawColor = intake.rawColor();
+
+            telemetry.addData("Has Cube", intake.hasElement());
+            telemetry.addData("Just Intaken", intake.justIntaken());
+            telemetry.addLine();
+            telemetry.addData("R", rawColor[0]);
+            telemetry.addData("G", rawColor[1]);
+            telemetry.addData("B", rawColor[2]);
+            telemetry.addLine();
+            telemetry.addData("Top Limit", topLimit.isPressed());
+            telemetry.addData("Lift Limit", liftLimit.isPressed());
+            telemetry.update();
         }
     }
 }

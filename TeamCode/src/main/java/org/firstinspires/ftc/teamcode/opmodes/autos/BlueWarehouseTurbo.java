@@ -12,13 +12,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.commandgroup.PickLevel;
-import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
 import org.firstinspires.ftc.teamcode.commandgroup.Reset;
+import org.firstinspires.ftc.teamcode.commands.RetractLift;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 import org.firstinspires.ftc.teamcode.util.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
@@ -33,6 +34,7 @@ public class BlueWarehouseTurbo extends CommandOpMode {
     private HorizontalLiftSubsystem horizontalLift;
     private VerticalLiftSubsystem verticalLift;
     private IntakeSubsystem intake;
+    private LimitSwitchSubsystem topLimit;
 
     @Override
     public void initialize() {
@@ -48,6 +50,7 @@ public class BlueWarehouseTurbo extends CommandOpMode {
         horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
         verticalLift = new VerticalLiftSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap);
+        topLimit = new LimitSwitchSubsystem(hardwareMap, "topLimit");
 
         drive = new SampleMecanumDrive(hardwareMap);
 
@@ -58,7 +61,7 @@ public class BlueWarehouseTurbo extends CommandOpMode {
         drive.setPoseEstimate(start);
 
         TrajectorySequence initialToHub = drive.trajectorySequenceBuilder(start)
-                .splineTo(new Vector2d(3, 39), Math.toRadians(230))
+                .splineTo(new Vector2d(2, 38), Math.toRadians(220))
                 .build();
 
         TrajectorySequence finalToWarehouse = drive.trajectorySequenceBuilder(initialToHub.end())
@@ -96,8 +99,11 @@ public class BlueWarehouseTurbo extends CommandOpMode {
                         new IntakeCube(intake)
                 ),
                 new ParallelCommandGroup(
-                        new FollowTrajectoryCommand(drive, initialToHub),
-                        new PickLevel(elementPosition, verticalLift, horizontalLift, intake)
+                        new PickLevel(elementPosition, verticalLift, horizontalLift, intake),
+                        new SequentialCommandGroup(
+                                new WaitCommand(500),
+                                new FollowTrajectoryCommand(drive, initialToHub)
+                        )
                 ),
                 new ParallelRaceGroup(
                         new WaitCommand(2000),
@@ -105,7 +111,7 @@ public class BlueWarehouseTurbo extends CommandOpMode {
                 ),
                 new ParallelCommandGroup(
                         new FollowTrajectoryCommand(drive, finalToWarehouse),
-                        new ReturnLift(verticalLift, horizontalLift)
+                        new RetractLift(horizontalLift, topLimit)
                 )
             )
         );

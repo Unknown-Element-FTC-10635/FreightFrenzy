@@ -19,27 +19,25 @@ import org.firstinspires.ftc.teamcode.commandgroup.DeliverToTopLevel;
 import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @TeleOp(name = "TeleOp")
 public class UKTeleOp extends OpMode {
-    DcMotorEx leftFront, leftRear, rightRear, rightFront, ducky, liftLeft, liftRight, extension;
-    CRServo intake, tapeOut;
+    DcMotorEx leftFront, leftRear, rightRear, rightFront, liftLeft, liftRight, extension;
+    CRServo tapeOut;
     Servo tapeYaw, tapePitch;
 
     DuckWheelSubsystem duck;
     VerticalLiftSubsystem vertical;
     HorizontalLiftSubsystem horizontal;
-
-    GamepadEx secondary;
-    GamepadButton autoLift;
+    IntakeSubsystem intake;
 
     ElapsedTime time, matchTimer;
 
     int tapeOutValue = 0;
-    double duckRampUp = 0;
 
     @Override
     public void init() {
@@ -48,10 +46,10 @@ public class UKTeleOp extends OpMode {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
+        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        ducky = hardwareMap.get(DcMotorEx.class, "ducky");
 
         extension = hardwareMap.get(DcMotorEx.class, "extension");
 
@@ -68,7 +66,6 @@ public class UKTeleOp extends OpMode {
         liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        intake = hardwareMap.get(CRServo.class, "intake");
         tapeOut = hardwareMap.get(CRServo.class, "tapeOut");
 
         tapeYaw = hardwareMap.get(Servo.class, "tapeYaw");
@@ -80,17 +77,10 @@ public class UKTeleOp extends OpMode {
         duck = new DuckWheelSubsystem(hardwareMap);
         vertical = new VerticalLiftSubsystem(hardwareMap, telemetry);
         horizontal = new HorizontalLiftSubsystem(hardwareMap, telemetry);
+        intake = new IntakeSubsystem(hardwareMap);
 
         vertical.reset();
         horizontal.reset();
-
-        telemetry.addLine("Scheduling Buttons macros");
-        telemetry.update();
-
-        secondary = new GamepadEx(gamepad2);
-
-        autoLift = new GamepadButton(secondary, GamepadKeys.Button.Y);
-        autoLift.whenPressed(new DeliverToTopLevel(vertical, horizontal));
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
@@ -119,8 +109,8 @@ public class UKTeleOp extends OpMode {
         rightRear.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) + gamepad1.right_stick_x));
         rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
 
-        tapePitch.setPosition(tapePitch.getPosition() + (0.001 * -Math.signum(gamepad2.right_stick_y)));
-        tapeYaw.setPosition(tapeYaw.getPosition() + ((0.0025 - (tapeOutValue * 0.0000005)) * -Math.signum(gamepad2.left_stick_x)));
+        tapePitch.setPosition(tapePitch.getPosition() + (0.004 * -Math.signum(gamepad2.right_stick_y)));
+        tapeYaw.setPosition(tapeYaw.getPosition() + ((0.004 - (tapeOutValue * 0.000005)) * -Math.signum(gamepad2.left_stick_x)));
 
         float liftPower = (gamepad2.right_trigger - gamepad2.left_trigger);
         liftLeft.setPower(liftPower);
@@ -135,54 +125,49 @@ public class UKTeleOp extends OpMode {
         }
 
         if (gamepad1.dpad_left) {
-            //duckRampUp += 0.005;
-            ducky.setPower(-0.5 - duckRampUp);
-        } else if (gamepad1.dpad_right) {
-            //duckRampUp += 0.005;
-            ducky.setPower(0.5 + duckRampUp);
-        } else if (gamepad1.dpad_down) {
-            ducky.setPower(0);
-            //duckRampUp = 0;
-        }
-
-        if (gamepad1.square) {
-            intake.setPower(1);
-        } else if (gamepad1.circle) {
-            intake.setPower(-1);
-        } else if (gamepad1.cross) {
-            intake.setPower(0);
-        }
-
-        if (gamepad2.x) {
-            tapeOutValue--;
-            tapeOut.setPower(-1);
-        } else if (gamepad2.b) {
-            tapeOutValue++;
-            tapeOut.setPower(1);
-        } else {
-            tapeOut.setPower(0);
-        }
-
-        if (gamepad1.dpad_up) {
             CommandScheduler.getInstance().schedule(new ParallelRaceGroup(
-                    new WaitCommand(1800),
+                    new WaitCommand(2000),
+                    new SpinCarousel(duck, false)
+            ));
+        } else if (gamepad1.dpad_right) {
+            CommandScheduler.getInstance().schedule(new ParallelRaceGroup(
+                    new WaitCommand(2000),
                     new SpinCarousel(duck, true)
             ));
         }
 
         CommandScheduler.getInstance().run();
 
-        if ((int)matchTimer.seconds() == 30 && !gamepad1.isRumbling() || (int)matchTimer.seconds() == 60 && !gamepad1.isRumbling()) {
-            gamepad1.rumble(1000);
-        }
-        if ((int)matchTimer.seconds() == 85 && !gamepad1.isRumbling()) {
-            gamepad1.rumble(0.5, 1, 500);
-            gamepad1.rumble(1, 0.5, 500);
-        }
-        if ((int)matchTimer.seconds() == 115 && !gamepad1.isRumbling()) {
-            gamepad1.rumble(2000);
+        if (gamepad1.square) {
+            intake.in();
+        } else if (gamepad1.circle) {
+            intake.out();
+        } else if (gamepad1.cross) {
+            intake.stop();
         }
 
+        if (gamepad2.square) {
+            tapeOutValue--;
+            tapeOut.setPower(-1);
+        } else if (gamepad2.circle) {
+            tapeOutValue++;
+            tapeOut.setPower(1);
+        } else {
+            tapeOut.setPower(0);
+        }
+
+
+        /*
+        Handles the vibrators on the controllers
+         */
+        if (intake.hasElement() && !gamepad1.isRumbling()) { // && intake.justIntaken()) {
+            gamepad1.rumble(200);
+            gamepad2.rumble(200);
+        }
+
+        /*
+        Telemetry information to be printed
+         */
         telemetry.addData("MATCH TIMER", (int)matchTimer.seconds());
         telemetry.addData("Tape Out", tapeOutValue);
         telemetry.addData("Tape Pitch", tapePitch.getPosition());

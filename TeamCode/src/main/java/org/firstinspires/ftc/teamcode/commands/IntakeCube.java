@@ -24,6 +24,6 @@ public class IntakeCube extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return !intake.isSpinning();
+        return intake.hasElement();
     }
 }

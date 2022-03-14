@@ -13,19 +13,20 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.commandgroup.PickLevel;
-import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
+import org.firstinspires.ftc.teamcode.commandgroup.Reset;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
-import org.firstinspires.ftc.teamcode.commandgroup.Reset;
-import org.firstinspires.ftc.teamcode.commands.SpinCarousel;
+import org.firstinspires.ftc.teamcode.commands.RetractLift;
+import org.firstinspires.ftc.teamcode.commands.SpinCarouselAuto;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.util.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.VerticalLiftSubsystem;
+import org.firstinspires.ftc.teamcode.util.Webcam1;
 
 @Autonomous(group = "Blue")
 public class BlueDuckWarehouse extends CommandOpMode {
@@ -37,6 +38,7 @@ public class BlueDuckWarehouse extends CommandOpMode {
     private HorizontalLiftSubsystem horizontalLift;
     private VerticalLiftSubsystem verticalLift;
     private IntakeSubsystem intake;
+    private LimitSwitchSubsystem topLimit;
 
     @Override
     public void initialize() {
@@ -53,6 +55,7 @@ public class BlueDuckWarehouse extends CommandOpMode {
         horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
         verticalLift = new VerticalLiftSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap);
+        topLimit = new LimitSwitchSubsystem(hardwareMap, "topLimit");
 
         drive = new SampleMecanumDrive(hardwareMap);
 
@@ -64,7 +67,7 @@ public class BlueDuckWarehouse extends CommandOpMode {
 
         TrajectorySequence toDuck = drive.trajectorySequenceBuilder(start)
                 .lineTo(new Vector2d(-50, 50))
-                .lineTo(new Vector2d(-62, 55))
+                .lineTo(new Vector2d(-59, 54))
                 .waitSeconds(1)
                 .build();
 
@@ -79,7 +82,7 @@ public class BlueDuckWarehouse extends CommandOpMode {
                 .build();
 
         TrajectorySequence toWarehouse = drive.trajectorySequenceBuilder(toHub.end())
-                .lineTo(new Vector2d(-50, 25))
+                .lineTo(new Vector2d(-55, 25))
                 .lineTo(new Vector2d(-60, 40))
                 .strafeLeft(10)
                 .lineToLinearHeading(new Pose2d(8, 70, Math.toRadians(10)))
@@ -113,23 +116,28 @@ public class BlueDuckWarehouse extends CommandOpMode {
                                 new WaitCommand(250),
                                 new IntakeCube(intake)
                         ),
+                        new InstantCommand(() -> intake.in(0.2)),
                         new FollowTrajectoryCommand(drive, toDuck),
                         new ParallelDeadlineGroup(
-                                new WaitCommand(3000),
-                                new SpinCarousel(duck, true)
+                                new WaitCommand(4000),
+                                new SpinCarouselAuto(duck, true)
                         ),
                         new FollowTrajectoryCommand(drive, toHub),
                         new ParallelCommandGroup(
-                                new FollowTrajectoryCommand(drive, approachHub),
-                                new PickLevel(elementPosition, verticalLift, horizontalLift, intake)
+                                new PickLevel(elementPosition, verticalLift, horizontalLift, intake),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(500),
+                                        new FollowTrajectoryCommand(drive, approachHub)
+                                )
                         ),
                         new ParallelRaceGroup(
                                 new WaitCommand(2000),
                                 new OuttakeCube(intake)
                         ),
+                        new InstantCommand(() -> verticalLift.releaseBrakes()),
                         new ParallelCommandGroup(
                                 new FollowTrajectoryCommand(drive, toWarehouse),
-                                new ReturnLift(verticalLift, horizontalLift)
+                                new RetractLift(horizontalLift, topLimit)
                         )
                 )
         );

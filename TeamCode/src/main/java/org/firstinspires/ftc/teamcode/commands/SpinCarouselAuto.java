@@ -1,37 +1,25 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.DuckWheelSubsystem;
 
-public class SpinCarousel extends CommandBase {
+public class SpinCarouselAuto extends CommandBase {
     private final DuckWheelSubsystem ducky;
-
-    private ElapsedTime time;
-
-    // True -> Blue; False -> Red;
     private final boolean blueDirection;
 
-    public SpinCarousel(DuckWheelSubsystem ducky, boolean blue) {
+    public SpinCarouselAuto(DuckWheelSubsystem ducky, boolean blue) {
         this.ducky = ducky;
         blueDirection = blue;
         addRequirements(ducky);
-
-        time = new ElapsedTime();
     }
 
     @Override
     public void initialize() {
-        time.startTime();
-    }
-
-    @Override
-    public void execute() {
         if (blueDirection) {
-            ducky.speed(0.01 + (time.milliseconds() / 10000 * 5));
+            ducky.right();
         } else {
-            ducky.speed(-(0.01 + (time.milliseconds() / 10000 * 5)));
+            ducky.left();
         }
     }
 

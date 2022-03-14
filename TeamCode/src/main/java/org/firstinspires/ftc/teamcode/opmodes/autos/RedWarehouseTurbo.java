@@ -12,13 +12,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.commandgroup.PickLevel;
-import org.firstinspires.ftc.teamcode.commandgroup.ReturnLift;
 import org.firstinspires.ftc.teamcode.commands.FollowTrajectoryCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeCube;
 import org.firstinspires.ftc.teamcode.commands.OuttakeCube;
 import org.firstinspires.ftc.teamcode.commandgroup.Reset;
+import org.firstinspires.ftc.teamcode.commands.RetractLift;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.subsystems.LimitSwitchSubsystem;
 import org.firstinspires.ftc.teamcode.util.Webcam1;
 import org.firstinspires.ftc.teamcode.subsystems.HorizontalLiftSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
@@ -33,6 +34,7 @@ public class RedWarehouseTurbo extends CommandOpMode {
     private HorizontalLiftSubsystem horizontalLift;
     private VerticalLiftSubsystem verticalLift;
     private IntakeSubsystem intake;
+    private LimitSwitchSubsystem topLimit;
 
     Servo tapeYaw, tapePitch;
 
@@ -50,6 +52,7 @@ public class RedWarehouseTurbo extends CommandOpMode {
         horizontalLift = new HorizontalLiftSubsystem(hardwareMap, telemetry);
         verticalLift = new VerticalLiftSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap);
+        topLimit = new LimitSwitchSubsystem(hardwareMap, "topLimit");
 
         drive = new SampleMecanumDrive(hardwareMap);
 
@@ -108,7 +111,7 @@ public class RedWarehouseTurbo extends CommandOpMode {
                         ),
                         new ParallelCommandGroup(
                                 new FollowTrajectoryCommand(drive, finalToWarehouse),
-                                new ReturnLift(verticalLift, horizontalLift)
+                                new RetractLift(horizontalLift, topLimit)
                         )
                 )
         );
