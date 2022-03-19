@@ -25,7 +25,7 @@ public class CycleWarehouse extends SequentialCommandGroup {
     private static int cycles = 0;
 
     public CycleWarehouse(SampleMecanumDrive drive, VerticalLiftSubsystem vertical, HorizontalLiftSubsystem horizontal,
-                          IntakeSubsystem intake, LimitSwitchSubsystem topSwitch, Pose2d start, boolean red) {
+                          IntakeSubsystem intake, LimitSwitchSubsystem liftSwitch, Pose2d start, boolean red) {
         cycles++;
         int direction = 1;
         if (red) {
@@ -38,25 +38,27 @@ public class CycleWarehouse extends SequentialCommandGroup {
                 .build();
 
         TrajectorySequence throughGap = drive.trajectorySequenceBuilder(toWarehouse.end())
-                .lineToLinearHeading(new Pose2d(45 + (cycles * 2), 68 * direction, Math.toRadians(cycles * -direction)))
+                .lineToLinearHeading(new Pose2d(45, 68 * direction))
+                .turn(Math.toRadians(cycles * -direction))
                 .waitSeconds(1.5)
                 .build();
 
         TrajectorySequence toHub = drive.trajectorySequenceBuilder(throughGap.end())
                 .setReversed(true)
-                .lineTo(new Vector2d(0, 68 * direction))
+                .lineToLinearHeading(new Pose2d(0, 68 * direction, 0))
                 .lineTo(new Vector2d(-12, 65 * direction))
                 .setReversed(false)
-                .turn(-Math.toRadians(93) * direction)
+                .turn(-Math.toRadians(90) * direction)
                 .forward(17)
                 .build();
 
         addCommands(
                 new FollowTrajectoryCommand(drive, toWarehouse),
-                new ToGround(vertical, horizontal, topSwitch),
+                new InstantCommand(() -> vertical.enableBrakes()),
+                new ToGround(vertical, horizontal, liftSwitch),
                 new ParallelRaceGroup(
-                        new IntakeCube(intake),
-                        new FollowTrajectoryCommand(drive, throughGap)
+                        new FollowTrajectoryCommand(drive, throughGap),
+                        new IntakeCube(intake, drive, throughGap.end())
                 ),
                 new ParallelCommandGroup(
                         new FollowTrajectoryCommand(drive, toHub),

@@ -10,8 +10,9 @@ public class LowerLiftToGround extends CommandBase {
     private final VerticalLiftSubsystem liftSubsystem;
     private final LimitSwitchSubsystem switchSubsystem;
 
-    public LowerLiftToGround(VerticalLiftSubsystem subsystem, LimitSwitchSubsystem switchSubsystem) {
-        liftSubsystem = subsystem;
+    public LowerLiftToGround(VerticalLiftSubsystem verticalSubsystem, LimitSwitchSubsystem switchSubsystem) {
+        liftSubsystem = verticalSubsystem;
+        liftSubsystem.enableBrakes();
         this.switchSubsystem = switchSubsystem;
         addRequirements(liftSubsystem);
     }
@@ -19,7 +20,7 @@ public class LowerLiftToGround extends CommandBase {
     @Override
     public void initialize() {
         liftSubsystem.liftToPosition(VerticalLevel.Ground);
-        liftSubsystem.setPower(0.3);
+        liftSubsystem.setPower(0.2);
     }
 
     @Override

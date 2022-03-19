@@ -115,10 +115,7 @@ public class RedDuckWarehouse extends CommandOpMode {
             new SequentialCommandGroup(
                 new InstantCommand(() -> webcam.stop()),
                 new Reset(verticalLift, horizontalLift),
-                new ParallelRaceGroup(
-                        new WaitCommand(250),
-                        new IntakeCube(intake)
-                ),
+                new InstantCommand(() -> intake.in(0.2)),
                 new FollowTrajectoryCommand(drive, toDuck),
                 new ParallelDeadlineGroup(
                         new WaitCommand(4000),

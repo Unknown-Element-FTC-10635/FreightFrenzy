@@ -21,7 +21,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
      * Enum of pre-saved position
      */
     public enum VerticalLevel {
-        CycleTop(1900),
+        CycleTop(2600),
         Top(1800), // 1500
         Middle(950), // 800
         Bottom(200), // 200
@@ -63,7 +63,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
         telemetry.addData("Vertical Lift Level:", liftLevel);
         telemetry.addData("Left Lift", liftLeftEn.getPosition());
         telemetry.addData("Right Lift", liftRightEn.getPosition());
-        //telemetry.update();
+        telemetry.update();
     }
 
     /**
@@ -104,7 +104,6 @@ public class VerticalLiftSubsystem extends SubsystemBase {
      * Resets the encoder values
      */
     public void reset() {
-        liftLevel = VerticalLevel.Home;
         liftLeftEn.reset();
         liftRightEn.reset();
     }
@@ -138,5 +137,10 @@ public class VerticalLiftSubsystem extends SubsystemBase {
     public void releaseBrakes() {
         liftLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         liftRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+    }
+
+    public void enableBrakes() {
+        liftLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        liftRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
     }
 }
