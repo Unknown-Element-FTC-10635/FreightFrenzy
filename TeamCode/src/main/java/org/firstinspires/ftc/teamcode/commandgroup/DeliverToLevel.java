@@ -16,10 +16,10 @@ class DeliverToLevel extends SequentialCommandGroup {
         addCommands(
                 new ExtendLift(horizontal, HorizontalLevel.PushOut),
                 new ParallelCommandGroup(
-                        new RaiseLift(vertical, vertLevel, 0.4),
+                        new ExtendLift(horizontal, horizontalLevel),
                         new SequentialCommandGroup(
                                 new WaitCommand(300),
-                                new ExtendLift(horizontal, horizontalLevel)
+                                new RaiseLift(vertical, vertLevel, 0.4)
                         )
                 )
                 //new ReturnLift(vertical, horizontal)

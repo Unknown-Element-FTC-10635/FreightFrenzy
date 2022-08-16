@@ -17,14 +17,14 @@ public class DuckWheelSubsystem extends SubsystemBase {
      * Spins the wheel left
      */
     public void left() {
-        ducky.set(-0.3);
+        ducky.set(-0.45);
     }
 
     /**
      * Spins the wheel right
      */
     public void right() {
-        ducky.set(0.3);
+        ducky.set(0.45);
     }
 
     public void speed(double speed) {ducky.set(speed);}

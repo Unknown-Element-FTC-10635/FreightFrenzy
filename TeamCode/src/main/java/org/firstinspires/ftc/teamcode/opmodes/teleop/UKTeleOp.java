@@ -104,15 +104,15 @@ public class UKTeleOp extends OpMode {
     public void loop() {
         time.reset();
 
-        leftFront.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) - gamepad1.right_stick_x));
-        leftRear.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) - gamepad1.right_stick_x));
-        rightRear.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) + gamepad1.right_stick_x));
-        rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x));
+        leftFront.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) - gamepad1.right_stick_x)*0.5);
+        leftRear.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) - gamepad1.right_stick_x)*0.5);
+        rightRear.setPower(((gamepad1.left_stick_y - gamepad1.left_stick_x) + gamepad1.right_stick_x)*0.5);
+        rightFront.setPower(((gamepad1.left_stick_y + gamepad1.left_stick_x) + gamepad1.right_stick_x)*0.5);
 
         tapePitch.setPosition(tapePitch.getPosition() + (0.004 * -Math.signum(gamepad2.right_stick_y)));
         tapeYaw.setPosition(tapeYaw.getPosition() + ((0.004 - (tapeOutValue * 0.000005)) * -Math.signum(gamepad2.left_stick_x)));
 
-        float liftPower = (gamepad2.right_trigger - gamepad2.left_trigger);
+        float liftPower = (gamepad2.right_trigger - gamepad2.left_trigger)/2;
         liftLeft.setPower(liftPower);
         liftRight.setPower(liftPower);
 
@@ -126,21 +126,20 @@ public class UKTeleOp extends OpMode {
 
         if (gamepad1.dpad_left) {
             CommandScheduler.getInstance().schedule(new ParallelRaceGroup(
-                    new WaitCommand(2000),
+                    new WaitCommand(1550),
                     new SpinCarousel(duck, false)
             ));
         } else if (gamepad1.dpad_right) {
             CommandScheduler.getInstance().schedule(new ParallelRaceGroup(
-                    new WaitCommand(2000),
+                    new WaitCommand(1550),
                     new SpinCarousel(duck, true)
             ));
         }
 
         CommandScheduler.getInstance().run();
 
-        if (gamepad1.square) {
-            intake.in();
-        } else if (gamepad1.circle) {
+        intake.in();
+        if (gamepad1.circle) {
             intake.out();
         } else if (gamepad1.cross) {
             intake.stop();
@@ -154,15 +153,6 @@ public class UKTeleOp extends OpMode {
             tapeOut.setPower(1);
         } else {
             tapeOut.setPower(0);
-        }
-
-
-        /*
-        Handles the vibrators on the controllers
-         */
-        if (intake.hasElement() && !gamepad1.isRumbling()) { // && intake.justIntaken()) {
-            gamepad1.rumble(200);
-            gamepad2.rumble(200);
         }
 
         /*

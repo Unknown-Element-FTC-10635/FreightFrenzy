@@ -71,12 +71,12 @@ public class BlueDuckCycle extends CommandOpMode {
 
         TrajectorySequence toDuck = drive.trajectorySequenceBuilder(start)
                 .lineTo(new Vector2d(-50, 50))
-                .lineTo(new Vector2d(-59, 54))
-                .waitSeconds(1)
+                .lineTo(new Vector2d(-61, 56))
+                //.waitSeconds(1)
                 .build();
 
         TrajectorySequence toHub = drive.trajectorySequenceBuilder(toDuck.end())
-                .lineTo(new Vector2d(-14, 54))
+                .lineTo(new Vector2d(-14, 52))
                 .build();
 
         TrajectorySequence approachHub = drive.trajectorySequenceBuilder(toHub.end())
@@ -84,9 +84,11 @@ public class BlueDuckCycle extends CommandOpMode {
                 .build();
 
         TrajectorySequence toWarehouse = drive.trajectorySequenceBuilder(toHub.end())
-                .lineTo(new Vector2d(0, 55))
+                .back(10)
                 .turn(Math.toRadians(90))
-                .strafeLeft(10)
+                .lineTo(new Vector2d(0, 60))
+                .strafeLeft(15)
+                .forward(40)
                 .build();
 
         telemetry.addLine("Starting Webcam");
@@ -115,24 +117,26 @@ public class BlueDuckCycle extends CommandOpMode {
                         new InstantCommand(() -> intake.in(0.2)),
                         new FollowTrajectoryCommand(drive, toDuck),
                         new ParallelDeadlineGroup(
-                                new WaitCommand(4000),
+                                new WaitCommand(2500),
                                 new SpinCarouselAuto(duck, true)
                         ),
                         new FollowTrajectoryCommand(drive, toHub),
                         new ParallelCommandGroup(
                                 new PickLevel(elementPosition, verticalLift, horizontalLift, intake),
                                 new SequentialCommandGroup(
-                                        new WaitCommand(500),
+                                        new WaitCommand(1200),
                                         new FollowTrajectoryCommand(drive, approachHub)
                                 )
                         ),
                         new ParallelRaceGroup(
-                                new WaitCommand(2000),
+                                new WaitCommand(1000),
                                 new OuttakeCube(intake)
                         ),
                         new InstantCommand(() -> verticalLift.releaseBrakes()),
-                        new FollowTrajectoryCommand(drive, toWarehouse),
-                        new CycleWarehouse(drive, verticalLift, horizontalLift, intake, liftLimit, toWarehouse.end(), false)
+                        //new FollowTrajectoryCommand(drive, toWarehouse),
+                        new CycleWarehouse(drive, verticalLift, horizontalLift, intake, liftLimit, approachHub.end(), false),
+                        //new CycleWarehouse(drive, verticalLift, horizontalLift, intake, liftLimit, toHub.end(), false),
+                        new FollowTrajectoryCommand(drive, toWarehouse)
                 )
         );
 

@@ -21,7 +21,7 @@ public class VerticalLiftSubsystem extends SubsystemBase {
      * Enum of pre-saved position
      */
     public enum VerticalLevel {
-        CycleTop(2600),
+        CycleTop(2700),
         Top(1800), // 1500
         Middle(950), // 800
         Bottom(200), // 200

@@ -29,9 +29,9 @@ public class SpinCarousel extends CommandBase {
     @Override
     public void execute() {
         if (blueDirection) {
-            ducky.speed(0.01 + (time.milliseconds() / 10000 * 5));
+            ducky.speed(0.3 + (time.milliseconds() / 10000 * 5));
         } else {
-            ducky.speed(-(0.01 + (time.milliseconds() / 10000 * 5)));
+            ducky.speed(-(0.3 + (time.milliseconds() / 10000 * 5)));
         }
     }
 

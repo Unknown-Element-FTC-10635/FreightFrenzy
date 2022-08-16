@@ -12,14 +12,10 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 public class IntakeCube extends CommandBase {
     private final IntakeSubsystem intake;
     private final SampleMecanumDrive drive;
-    private final Pose2d pose;
 
-    private int iteration = 0;
-
-    public IntakeCube(IntakeSubsystem intake, SampleMecanumDrive drive, Pose2d pose) {
+    public IntakeCube(IntakeSubsystem intake, SampleMecanumDrive drive) {
         this.intake = intake;
         this.drive = drive;
-        this.pose = pose;
         addRequirements(intake);
     }
 
@@ -28,15 +24,12 @@ public class IntakeCube extends CommandBase {
         intake.in();
     }
 
-    /*
+
     @Override
     public void execute() {
-        TrajectorySequence forward = drive.trajectorySequenceBuilder(new Pose2d(pose.getX() + iteration, pose.getY()))
-                .forward(10)
-                .build();
-        iteration += 10;
-        CommandScheduler.getInstance().schedule(new FollowTrajectoryCommand(drive, forward));
-    }*/
+        drive.setMotorPowers(0.2, 0.2, 0.2, 0.2);
+        drive.update();
+    }
 
     @Override
     public void end(boolean interrupted) {
